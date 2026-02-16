@@ -14,7 +14,114 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{
+/* --- MINDSTEP ELITE CSS PATCH --- */
+
+/* Safe Area Fix per iPhone 15/16 */
+body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    background-color: var(--bg);
+}
+
+/* Header che non si sovrappone */
+header {
+    padding-top: max(15px, env(safe-area-inset-top)); 
+    height: auto;
+    min-height: 70px;
+}
+
+/* Nuovi Badge Geometrici (No Emojis) */
+.badge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 15px;
+    padding: 10px;
+}
+
+.badge-item {
+    aspect-ratio: 1;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px; /* Soft geometric */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5; /* Locked state */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.badge-item.unlocked {
+    opacity: 1;
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(0,212,255,0.05) 0%, rgba(59,79,160,0.1) 100%);
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.badge-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+}
+
+.badge-item.unlocked .badge-icon {
+    color: var(--primary);
+    filter: drop-shadow(0 0 5px rgba(0,212,255,0.4));
+}
+
+.badge-name {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+/* Pop-up Introspezione (Stile Dynamic Island) */
+#introspection-popup {
+    position: fixed;
+    top: max(20px, env(safe-area-inset-top));
+    left: 50%;
+    transform: translateX(-50%) translateY(-150%); /* Nascosto in alto */
+    width: 90%;
+    max-width: 400px;
+    background: rgba(15, 20, 25, 0.95); /* Quasi nero */
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 9999;
+    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+#introspection-popup.visible {
+    transform: translateX(-50%) translateY(10px);
+}
+
+#introspection-popup .icon-pulse {
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.7);
+    animation: pulse-cyan 2s infinite;
+}
+
+@keyframes pulse-cyan {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 212, 255, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
+}
+  :root{
 --primary:#0EA5E9;--primary-hover:#0284C7;--secondary:#06B6D4;--accent:#8B5CF6;
 --success:#10B981;--warning:#F59E0B;--danger:#EF4444;
 --bg-1:#FFFFFF;--bg-2:#F9FAFB;--bg-3:#F3F4F6;
