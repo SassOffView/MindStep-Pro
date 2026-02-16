@@ -419,3 +419,160 @@ body {
 <script src="app-complete.js"></script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>MindStep Elite - All-in-One</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* PALETTE ELITE DAL FILE COLORS.JSON */
+:root {
+    --primary: #00d4ff; --navy-dark: #0a1128; --navy-med: #1a2357;
+    --text: #ffffff; --text-sec: #8b92a3; --border: #2b3a7f;
+    --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom);
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+    font-family: 'Inter', sans-serif; background-color: var(--navy-dark); color: var(--text);
+    margin: 0; padding: var(--safe-top) 0 var(--safe-bottom) 0;
+    height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+}
+
+/* MODALI E ONBOARDING */
+.overlay {
+    position: fixed; inset: 0; background: var(--navy-dark); z-index: 9999;
+    display: none; flex-direction: column; padding: 40px 25px; justify-content: center;
+}
+.overlay.active { display: flex; }
+
+/* NAVIGAZIONE ORIZZONTALE (FIX BUG-002) */
+.nav-bar {
+    background: rgba(10, 17, 40, 0.98); border-top: 1px solid var(--border);
+    height: 75px; display: flex; justify-content: space-around; align-items: center;
+}
+.nav-item {
+    background: none; border: none; color: var(--text-sec); 
+    display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 4px;
+}
+.nav-item.active { color: var(--primary); }
+.nav-item svg { width: 24px; height: 24px; stroke: currentColor; }
+
+/* CONTENITORI VISTE */
+.view { flex: 1; overflow-y: auto; padding: 20px; display: none; }
+.view.active { display: block; }
+
+/* CARDS E UI COMPONENTS */
+.card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 18px; padding: 20px; margin-bottom: 15px; }
+.metric-row { display: flex; justify-content: space-around; text-align: center; margin-bottom: 20px; }
+.val { font-size: 1.8rem; font-weight: 800; color: var(--primary); display: block; }
+.lab { font-size: 0.7rem; text-transform: uppercase; color: var(--text-sec); }
+
+.btn-main { background: var(--primary); color: var(--navy-dark); border: none; padding: 18px; border-radius: 50px; font-weight: 800; width: 100%; cursor: pointer; }
+.btn-rec { width: 80px; height: 80px; border-radius: 50%; background: var(--navy-med); border: 2px solid var(--primary); color: white; margin: 20px auto; display: block; }
+.btn-rec.active { background: #ff4757; border-color: #ff4757; animation: pulse 1.5s infinite; }
+
+/* BADGES */
+.badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.badge { aspect-ratio: 1; border-radius: 12px; border: 1px solid var(--border); opacity: 0.2; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.5rem; }
+.badge.unlocked { opacity: 1; border-color: var(--primary); background: rgba(0,212,255,0.1); }
+
+/* POPUP (DYNAMIC ISLAND STYLE) */
+#popup {
+    position: fixed; top: calc(var(--safe-top) + 10px); left: 5%; width: 90%;
+    background: #1a2357; padding: 15px; border-radius: 25px; border: 1px solid var(--primary);
+    transform: translateY(-200%); transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1); z-index: 10000;
+}
+#popup.show { transform: translateY(0); }
+
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+</style>
+</head>
+<body>
+
+<div id="onboarding" class="overlay">
+    <h1 style="color: var(--primary); margin-bottom: 10px;">MindStep Setup</h1>
+    <p style="margin-bottom: 30px;">Ottimizziamo l'esperienza per te.</p>
+    <div class="card">
+        <input type="text" id="name" placeholder="Il tuo nome" style="width:100%; background:none; border:1px solid var(--border); color:white; padding:12px; margin-bottom:12px; border-radius:8px;">
+        <input type="number" id="age" placeholder="Età" style="width:100%; background:none; border:1px solid var(--border); color:white; padding:12px; margin-bottom:12px; border-radius:8px;">
+        <select id="sex" style="width:100%; background:none; border:1px solid var(--border); color:white; padding:12px; margin-bottom:12px; border-radius:8px;">
+            <option value="">Sesso</option>
+            <option value="M">Maschio</option>
+            <option value="F">Femmina</option>
+            <option value="N">Non Specificato</option>
+        </select>
+        <select id="lang" style="width:100%; background:none; border:1px solid var(--border); color:white; padding:12px; border-radius:8px;">
+            <option value="it-IT">Italiano</option>
+            <option value="en-US">English</option>
+        </select>
+    </div>
+    <button class="btn-main" onclick="finishSetup()">COMPLETA PROFILO</button>
+</div>
+
+<div id="view-home" class="view active">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <span id="user-display" style="font-weight:700;">Ciao, User</span>
+        <div id="weather" style="font-size:0.8rem; color:var(--primary);">...</div>
+    </div>
+    
+    <div class="card">
+        <div class="metric-row">
+            <div><span class="val" id="time">00:00</span><span class="lab">Tempo</span></div>
+            <div><span class="val" id="dist">0.00</span><span class="lab">Km</span></div>
+        </div>
+        <div class="metric-row">
+            <div><span class="val" id="steps">0</span><span class="lab">Passi</span></div>
+            <div><span class="val" id="notes">0</span><span class="lab">Idee</span></div>
+        </div>
+    </div>
+
+    <button id="btn-session" class="btn-main" onclick="toggleSession()">INIZIA CAMMINATA</button>
+    
+    <div style="text-align:center;">
+        <button id="btn-rec" class="btn-rec" onclick="toggleRec()">🎤</button>
+        <p id="rec-status" style="font-size:0.7rem; color:var(--text-sec);">BRAINSTORMING DISATTIVATO</p>
+    </div>
+</div>
+
+<div id="view-analysis" class="view">
+    <h3>Performance & Calendario</h3>
+    <div id="calendar" class="card"></div>
+    <h3>I tuoi Traguardi (60)</h3>
+    <div id="badge-grid" class="badge-grid"></div>
+</div>
+
+<div id="view-routines" class="view">
+    <h3>Le mie Routine</h3>
+    <div id="routine-list"></div>
+    <button class="btn-main" style="background:none; border:1px dashed var(--primary); color:var(--primary);" onclick="addRoutine()">+ NUOVA ROUTINE</button>
+</div>
+
+<div id="view-settings" class="view">
+    <h3>Impostazioni</h3>
+    <div class="card">
+        <h4>Musica</h4>
+        <button class="btn-main" style="background:var(--navy-med); color:white;">Configura Spotify/Music</button>
+    </div>
+    <div class="card" style="border-color:#ff4757;">
+        <h4 style="color:#ff4757;">Danger Zone</h4>
+        <button onclick="resetApp()" style="background:none; border:none; color:white;">Reset totale dati</button>
+    </div>
+</div>
+
+<nav class="nav-bar">
+    <button class="nav-item active" onclick="nav('home', this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</button>
+    <button class="nav-item" onclick="nav('analysis', this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 12h10M12 7v10"/></svg>Analisi</button>
+    <button class="nav-item" onclick="nav('routines', this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Routine</button>
+    <button class="nav-item" onclick="nav('settings', this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Altro</button>
+</nav>
+
+<div id="popup"><span></span></div>
+
+<script src="app-complete.js"></script>
+</body>
+</html>
