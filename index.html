@@ -261,3 +261,161 @@ p { color: var(--text-secondary); line-height: 1.5; }
 <script src="app-complete.js"></script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>MindStep Elite</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+    --primary: #00d4ff; --primary-dark: #00b4d8; --secondary: #5ce1e6;
+    --navy-dark: #0a1128; --navy-med: #1a2357; --bg: #0a1128;
+    --text: #ffffff; --text-sec: #a0aaec; --border: #2b3a7f;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body {
+    font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text);
+    margin: 0; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom) 0;
+    height: 100vh; overflow: hidden; display: flex; flex-direction: column;
+}
+
+/* Onboarding & Modals */
+.modal-overlay {
+    position: fixed; inset: 0; background: var(--navy-dark); z-index: 10000;
+    display: none; flex-direction: column; padding: 40px 20px;
+}
+.modal-overlay.active { display: flex; }
+
+/* Main Navigation (Horizontal Menu) */
+.nav-bottom {
+    background: rgba(10, 17, 40, 0.95); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border); display: flex; justify-content: space-around;
+    padding: 10px 0; height: calc(70px + env(safe-area-inset-bottom));
+}
+.nav-item {
+    background: none; border: none; color: var(--text-sec); 
+    display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; gap: 5px;
+}
+.nav-item.active { color: var(--primary); font-weight: 700; }
+
+/* Content Areas */
+.view-container { flex: 1; overflow-y: auto; padding: 20px; display: none; }
+.view-container.active { display: block; }
+
+/* Cards & Elements */
+.card { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 15px; }
+.metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn-main { background: var(--primary); color: var(--navy-dark); border: none; padding: 15px; border-radius: 50px; font-weight: 800; width: 100%; cursor: pointer; }
+.btn-main.recording { background: #ff4757; color: white; animation: pulse-red 2s infinite; }
+
+/* Badge Geometric Style */
+.badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
+.badge-item { aspect-ratio: 1; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; opacity: 0.3; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.6rem; text-align: center; }
+.badge-item.unlocked { opacity: 1; border-color: var(--primary); background: rgba(0,212,255,0.1); }
+
+@keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(255,71,87,0.4); } 70% { box-shadow: 0 0 0 15px rgba(255,71,87,0); } 100% { box-shadow: 0 0 0 0 rgba(255,71,87,0); } }
+
+#introspection-popup {
+    position: fixed; top: calc(10px + env(safe-area-inset-top)); left: 5%; width: 90%;
+    background: #1a2357; padding: 15px; border-radius: 20px; border: 1px solid var(--primary);
+    transform: translateY(-200%); transition: 0.5s; z-index: 11000;
+}
+#introspection-popup.visible { transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="onboarding-view" class="modal-overlay">
+    <h1 style="color: var(--primary);">Benvenuto in MindStep</h1>
+    <p>Configuriamo il tuo profilo per la performance mentale.</p>
+    <div class="card">
+        <input type="text" id="user-name" placeholder="Nome" style="width:100%; padding:12px; margin-bottom:10px; background:none; border:1px solid var(--border); color:white;">
+        <input type="number" id="user-age" placeholder="Età" style="width:100%; padding:12px; margin-bottom:10px; background:none; border:1px solid var(--border); color:white;">
+        <select id="user-lang" style="width:100%; padding:12px; background:none; border:1px solid var(--border); color:white;">
+            <option value="it-IT">Italiano</option>
+            <option value="en-US">English</option>
+        </select>
+    </div>
+    <button class="btn-main" onclick="finishOnboarding()">SALVA E INIZIA</button>
+</div>
+
+<div id="view-home" class="view-container active">
+    <div style="text-align:center; margin-bottom:30px;">
+        <h2 id="welcome-msg">Ciao, Pro!</h2>
+        <div id="weather-info" style="color: var(--secondary); font-size: 0.8rem;"></div>
+    </div>
+    
+    <div class="card">
+        <div class="metric-grid">
+            <div style="text-align:center;"><div class="metric-val" id="timer-display" style="font-size: 2rem; font-weight:800;">00:00</div><small>DURATA</small></div>
+            <div style="text-align:center;"><div class="metric-val" id="dist-display" style="font-size: 2rem; font-weight:800;">0.00</div><small>KM</small></div>
+        </div>
+        <div style="margin-top:15px; display:flex; justify-content:space-around; color:var(--text-sec); font-size:0.8rem;">
+            <span>Passi: <b id="steps-display">0</b></span>
+            <span>Idee: <b id="notes-display">0</b></span>
+        </div>
+    </div>
+
+    <button id="main-action-btn" class="btn-main" onclick="toggleSession()">INIZIA CAMMINATA</button>
+    
+    <div style="margin-top:20px; text-align:center;">
+        <button onclick="toggleRecording()" id="rec-btn" style="width:70px; height:70px; border-radius:50%; background:var(--navy-med); border:2px solid var(--primary); color:white; font-size:1.5rem;">🎤</button>
+        <p style="font-size:0.7rem; color:var(--text-sec); margin-top:10px;">BRAINSTORMING ATTIVO</p>
+    </div>
+</div>
+
+<div id="view-performance" class="view-container">
+    <h2>Performance Analysis</h2>
+    <div class="card" id="calendar-container">
+        </div>
+    <h3>Elite Badges</h3>
+    <div id="badges-grid" class="badge-grid"></div>
+</div>
+
+<div id="view-routines" class="view-container">
+    <h2>Routine Mentali</h2>
+    <div id="routine-list"></div>
+    <button onclick="addRoutine()" style="background:none; border:1px dashed var(--primary); color:var(--primary); padding:10px; width:100%; border-radius:10px; margin-top:10px;">+ Aggiungi Routine</button>
+</div>
+
+<div id="view-settings" class="view-container">
+    <h2>Impostazioni</h2>
+    <div class="card">
+        <h3>Musica & Focus</h3>
+        <p style="font-size:0.8rem;">Collega il tuo player per il brainstorming.</p>
+        <button class="btn-main" style="background:var(--navy-med); color:white;">Configura Spotify</button>
+    </div>
+    <div class="card">
+        <h3>Gestione Dati</h3>
+        <button onclick="exportData()" style="background:none; border:none; color:var(--primary); width:100%; text-align:left; padding:10px 0;">Esporta JSON</button>
+        <button onclick="resetApp()" style="background:none; border:none; color:#ff4757; width:100%; text-align:left; padding:10px 0;">Reset Totale</button>
+    </div>
+</div>
+
+<nav class="nav-bottom">
+    <button class="nav-item active" onclick="switchView('home', this)">
+        <span>🏠</span><span>Home</span>
+    </button>
+    <button class="nav-item" onclick="switchView('performance', this)">
+        <span>📊</span><span>Analisi</span>
+    </button>
+    <button class="nav-item" onclick="switchView('routines', this)">
+        <span>✅</span><span>Routine</span>
+    </button>
+    <button class="nav-item" onclick="switchView('settings', this)">
+        <span>⚙️</span><span>Altro</span>
+    </button>
+</nav>
+
+<div id="introspection-popup">
+    <span id="popup-text"></span>
+</div>
+
+<script src="app-complete.js"></script>
+</body>
+</html>
