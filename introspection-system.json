@@ -1,0 +1,77 @@
+{
+  "design": {
+    "style": "Dynamic Island inspired",
+    "position": "top_bar_subtle",
+    "haptic_feedback": true,
+    "auto_dismiss": "30s",
+    "user_dismissable": true,
+    "animation": "slide_down_gentle"
+  },
+  
+  "triggers": [
+    {
+      "time": "5min",
+      "phase": "Riscaldamento",
+      "message": "C'è un pensiero che ti sta appesantendo? Nominalo e lascialo andare.",
+      "goal": "Decentramento cognitivo",
+      "color": "#00d4ff",
+      "icon": "breathing_circle"
+    },
+    {
+      "time": "15min",
+      "phase": "Flow",
+      "message": "Se questa sfida fosse un'opportunità travestita, cosa ti starebbe insegnando?",
+      "goal": "Reframing positivo",
+      "color": "#5ce1e6",
+      "icon": "perspective_shift"
+    },
+    {
+      "time": "25min",
+      "phase": "Picco Creativo",
+      "message": "Smetti di cercare la perfezione. Qual è la versione 'buona quanto basta' del tuo progetto?",
+      "goal": "Azione vs perfezionismo",
+      "color": "#3b4fa0",
+      "icon": "lightbulb_peak"
+    },
+    {
+      "time": "40min",
+      "phase": "Chiusura Profonda",
+      "message": "Complimenti per la profondità raggiunta. Qual è la singola azione che farai appena torni alla scrivania?",
+      "goal": "Consolidamento apprendimento",
+      "color": "#00b4b4",
+      "icon": "action_arrow"
+    }
+  ],
+  
+  "additional_triggers": [
+    {
+      "event": "rhythm_change",
+      "condition": "pace_increase > 15%",
+      "message": "Il tuo passo è accelerato. Corrisponde a un'emozione o a un'urgenza?",
+      "goal": "Consapevolezza psicosomatica",
+      "color": "#e97676",
+      "icon": "heart_pulse"
+    },
+    {
+      "event": "pause_session",
+      "message": "Stai facendo una pausa. Cosa stai notando in questo momento di silenzio?",
+      "goal": "Presenza mindful",
+      "color": "#7fecf0",
+      "icon": "pause_reflection"
+    },
+    {
+      "event": "session_complete",
+      "message": "Cosa porti via da questa camminata oltre ai chilometri?",
+      "goal": "Meta-apprendimento",
+      "color": "#00d4ff",
+      "icon": "gift_insight"
+    }
+  ],
+  
+  "user_responses": {
+    "enable_tracking": true,
+    "save_to_notes": true,
+    "ai_analysis": "weekly_pattern_detection",
+    "badge_unlock": "introspection_champion"
+  }
+}

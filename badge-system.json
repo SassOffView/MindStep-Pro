@@ -1,0 +1,425 @@
+{
+  "badge_design": {
+    "style": "Linear Minimalist Geometric",
+    "colors": ["#3b4fa0", "#00d4ff", "#5ce1e6"],
+    "themes": ["synapses", "paths", "growth_graphs"],
+    "no_emoji": true,
+    "svg_only": true
+  },
+  
+  "daily_badges": {
+    "athletic": [
+      {
+        "id": "ignition_point",
+        "name": "Punto di Innesco",
+        "requirement": "5000 passi",
+        "icon_type": "pentagon",
+        "description": "Fondamenta quotidiane raggiunte"
+      },
+      {
+        "id": "steady_rhythm",
+        "name": "Ritmo Costante",
+        "requirement": "20 min velocità stabile (±10%)",
+        "icon_type": "waveform_stable",
+        "description": "Movimento armonico mantenuto"
+      },
+      {
+        "id": "productive_dawn",
+        "name": "Alba Produttiva",
+        "requirement": "Camminata conclusa prima 08:00",
+        "icon_type": "sunrise_geometric",
+        "description": "Giornata iniziata con il piede giusto"
+      },
+      {
+        "id": "base_endurance",
+        "name": "Resistenza Base",
+        "requirement": "3 km percorsi",
+        "icon_type": "distance_marker",
+        "description": "Distanza minima consolidata"
+      },
+      {
+        "id": "turbo_step",
+        "name": "Turbo Step",
+        "requirement": "10 min > 120 passi/min",
+        "icon_type": "speed_burst",
+        "description": "Intensità sostenuta"
+      },
+      {
+        "id": "double_session",
+        "name": "Doppia Sessione",
+        "requirement": "2 camminate in un giorno",
+        "icon_type": "infinity_loop",
+        "description": "Movimento distribuito"
+      },
+      {
+        "id": "evening_closure",
+        "name": "Chiusura Serale",
+        "requirement": "Camminata dopo le 18:00",
+        "icon_type": "moon_geometric",
+        "description": "Decompressione serale"
+      },
+      {
+        "id": "perfect_pace",
+        "name": "Passo Perfetto",
+        "requirement": "Velocità 5-6 km/h per 15 min",
+        "icon_type": "target_circle",
+        "description": "Sweet spot cognitivo"
+      },
+      {
+        "id": "power_10k",
+        "name": "Power 10K",
+        "requirement": "10.000 passi in un giorno",
+        "icon_type": "crown_minimal",
+        "description": "Eccellenza quotidiana"
+      },
+      {
+        "id": "zen_walker",
+        "name": "Camminatore Zen",
+        "requirement": "30 min movimento continuo",
+        "icon_type": "circle_complete",
+        "description": "Flow state raggiunto"
+      }
+    ],
+    
+    "mental": [
+      {
+        "id": "consciousness_flow",
+        "name": "Flusso di Coscienza",
+        "requirement": "5 min registrazione continua",
+        "icon_type": "stream_lines",
+        "description": "Pensiero fluido catturato"
+      },
+      {
+        "id": "immediate_synthesis",
+        "name": "Sintesi Immediata",
+        "requirement": "Prima nota archiviata + AI",
+        "icon_type": "node_connected",
+        "description": "Organizzazione istantanea"
+      },
+      {
+        "id": "idea_architect",
+        "name": "Architetto di Idee",
+        "requirement": "3 trascrizioni in una sessione",
+        "icon_type": "triangle_grid",
+        "description": "Struttura concettuale"
+      },
+      {
+        "id": "deep_focus",
+        "name": "Focus Profondo",
+        "requirement": "Sessione senza interruzioni telefono",
+        "icon_type": "eye_minimal",
+        "description": "Attenzione indivisa"
+      },
+      {
+        "id": "eureka_moment",
+        "name": "Momento Eureka",
+        "requirement": "Nota dopo 20° minuto",
+        "icon_type": "lightbulb_geometric",
+        "description": "Picco creativo sfruttato"
+      },
+      {
+        "id": "thought_seed",
+        "name": "Seme di Pensiero",
+        "requirement": "Prima registrazione giornaliera",
+        "icon_type": "seed_geometric",
+        "description": "Idea piantata"
+      },
+      {
+        "id": "clarity_finder",
+        "name": "Cercatore di Chiarezza",
+        "requirement": "Risposta a pop-up introspezione",
+        "icon_type": "prism_minimal",
+        "description": "Autoconsapevolezza attivata"
+      },
+      {
+        "id": "quick_capture",
+        "name": "Cattura Rapida",
+        "requirement": "Nota < 2 min salvata",
+        "icon_type": "lightning_minimal",
+        "description": "Insight veloce"
+      },
+      {
+        "id": "morning_mind",
+        "name": "Mente Mattutina",
+        "requirement": "Brainstorm prima delle 09:00",
+        "icon_type": "sunrise_brain",
+        "description": "Freschezza cognitiva"
+      },
+      {
+        "id": "night_reflector",
+        "name": "Riflessore Notturno",
+        "requirement": "Brainstorm dopo le 20:00",
+        "icon_type": "moon_brain",
+        "description": "Sintesi serale"
+      }
+    ]
+  },
+  
+  "weekly_badges": {
+    "athletic": [
+      {
+        "id": "iron_week",
+        "name": "Settimana di Ferro",
+        "requirement": "7/7 giorni attivi",
+        "icon_type": "hexagon_complete",
+        "description": "Resilienza dimostrata"
+      },
+      {
+        "id": "split_marathon",
+        "name": "Maratona Spezzata",
+        "requirement": "42 km totali settimanali",
+        "icon_type": "path_continuous",
+        "description": "Distanza epica"
+      },
+      {
+        "id": "pace_maker",
+        "name": "Pace Maker",
+        "requirement": "Media ritmo +5% vs settimana scorsa",
+        "icon_type": "arrow_up_geometric",
+        "description": "Miglioramento continuo"
+      },
+      {
+        "id": "ascension",
+        "name": "Ascensione",
+        "requirement": "Incremento durata ogni giorno",
+        "icon_type": "stairs_minimal",
+        "description": "Progressione costante"
+      },
+      {
+        "id": "consistency_king",
+        "name": "Re di Costanza",
+        "requirement": "Stesso orario ±1h ogni giorno",
+        "icon_type": "clock_geometric",
+        "description": "Routine ottimizzata"
+      },
+      {
+        "id": "volume_master",
+        "name": "Master di Volume",
+        "requirement": "70.000 passi settimanali",
+        "icon_type": "mountain_geometric",
+        "description": "Quantità significativa"
+      },
+      {
+        "id": "streak_starter",
+        "name": "Iniziatore di Serie",
+        "requirement": "Prima settimana perfetta",
+        "icon_type": "star_minimal",
+        "description": "Abitudine innescata"
+      },
+      {
+        "id": "balanced_week",
+        "name": "Settimana Bilanciata",
+        "requirement": "3 mattina + 3 sera + 1 pomeriggio",
+        "icon_type": "balance_scale",
+        "description": "Distribuzione ottimale"
+      },
+      {
+        "id": "weekend_warrior",
+        "name": "Guerriero Weekend",
+        "requirement": "Sabato + Domenica > 90 min totali",
+        "icon_type": "shield_minimal",
+        "description": "Recupero attivo"
+      },
+      {
+        "id": "week_explorer",
+        "name": "Esploratore Settimanale",
+        "requirement": "5+ posizioni GPS diverse",
+        "icon_type": "compass_geometric",
+        "description": "Varietà di percorsi"
+      }
+    ],
+    
+    "mental": [
+      {
+        "id": "personal_encyclopedia",
+        "name": "Enciclopedia Personale",
+        "requirement": "60 min totali brainstorming",
+        "icon_type": "book_geometric",
+        "description": "Conoscenza accumulata"
+      },
+      {
+        "id": "organized_mind",
+        "name": "Mente Organizzata",
+        "requirement": "100% note categorizzate",
+        "icon_type": "grid_perfect",
+        "description": "Sistema mentale ottimale"
+      },
+      {
+        "id": "visionary",
+        "name": "Visionario",
+        "requirement": "1+ nota ogni giorno per 7 giorni",
+        "icon_type": "telescope_minimal",
+        "description": "Pensiero quotidiano"
+      },
+      {
+        "id": "problem_solver",
+        "name": "Problem Solver",
+        "requirement": "5 sessioni task-focused",
+        "icon_type": "puzzle_geometric",
+        "description": "Orientamento soluzioni"
+      },
+      {
+        "id": "ai_collaborator",
+        "name": "Collaboratore AI",
+        "requirement": "5+ export AI settimanali",
+        "icon_type": "network_nodes",
+        "description": "Sinergia umano-AI"
+      },
+      {
+        "id": "introspection_champion",
+        "name": "Campione Introspezione",
+        "requirement": "Risposta a 10+ pop-up",
+        "icon_type": "mirror_geometric",
+        "description": "Autoconsapevolezza profonda"
+      },
+      {
+        "id": "thought_diversity",
+        "name": "Diversità di Pensiero",
+        "requirement": "Note su 5+ categorie diverse",
+        "icon_type": "spectrum_lines",
+        "description": "Ampiezza cognitiva"
+      },
+      {
+        "id": "synthesis_master",
+        "name": "Master di Sintesi",
+        "requirement": "3+ revisioni AI completate",
+        "icon_type": "funnel_geometric",
+        "description": "Distillazione concettuale"
+      },
+      {
+        "id": "creative_streak",
+        "name": "Serie Creativa",
+        "requirement": "7 giorni con Eureka moment",
+        "icon_type": "spark_chain",
+        "description": "Flusso creativo sostenuto"
+      },
+      {
+        "id": "deep_thinker",
+        "name": "Pensatore Profondo",
+        "requirement": "3+ sessioni > 30 min",
+        "icon_type": "ocean_depth",
+        "description": "Riflessione sostanziale"
+      }
+    ]
+  },
+  
+  "monthly_badges": {
+    "athletic": [
+      {
+        "id": "metamorphosis",
+        "name": "Metamorfosi",
+        "requirement": "200.000 passi mensili",
+        "icon_type": "butterfly_geometric",
+        "description": "Trasformazione completata"
+      },
+      {
+        "id": "centurion",
+        "name": "Centurione",
+        "requirement": "100 km mensili",
+        "icon_type": "roman_numeral_c",
+        "description": "Distanza leggendaria"
+      },
+      {
+        "id": "total_sync",
+        "name": "Sincronia Totale",
+        "requirement": "20 ore movimento mensili",
+        "icon_type": "wave_sync",
+        "description": "Volume temporale"
+      },
+      {
+        "id": "evolution",
+        "name": "Evoluzione",
+        "requirement": "Ogni settimana migliore precedente",
+        "icon_type": "dna_helix",
+        "description": "Crescita esponenziale"
+      },
+      {
+        "id": "iron_month",
+        "name": "Mese di Ferro",
+        "requirement": "30/30 giorni attivi",
+        "icon_type": "fortress_geometric",
+        "description": "Invincibilità mensile"
+      },
+      {
+        "id": "peak_performer",
+        "name": "Peak Performer",
+        "requirement": "10 giorni > 10.000 passi",
+        "icon_type": "mountain_peak",
+        "description": "Eccellenza frequente"
+      },
+      {
+        "id": "distance_king",
+        "name": "Re della Distanza",
+        "requirement": "Giorno singolo > 15 km",
+        "icon_type": "crown_path",
+        "description": "Record personale"
+      },
+      {
+        "id": "month_explorer",
+        "name": "Esploratore Mensile",
+        "requirement": "20+ posizioni GPS uniche",
+        "icon_type": "map_geometric",
+        "description": "Territorio coperto"
+      }
+    ],
+    
+    "mental": [
+      {
+        "id": "mastermind",
+        "name": "Master Mind",
+        "requirement": "500 min brainstorming mensili",
+        "icon_type": "brain_network",
+        "description": "Produzione intellettuale massiva"
+      },
+      {
+        "id": "strategic_evolution",
+        "name": "Evoluzione Strategica",
+        "requirement": "Top 10 idee revisionate",
+        "icon_type": "chess_knight",
+        "description": "Prioritizzazione strategica"
+      },
+      {
+        "id": "analytical_thinker",
+        "name": "Pensatore Analitico",
+        "requirement": "Rapporto AI stress ridotto",
+        "icon_type": "graph_downtrend",
+        "description": "Miglioramento verbale"
+      },
+      {
+        "id": "knowledge_architect",
+        "name": "Architetto della Conoscenza",
+        "requirement": "100+ note organizzate",
+        "icon_type": "blueprint_minimal",
+        "description": "Sistema costruito"
+      },
+      {
+        "id": "insight_collector",
+        "name": "Collezionista di Insight",
+        "requirement": "50+ Eureka moments",
+        "icon_type": "gem_collection",
+        "description": "Ricchezza concettuale"
+      },
+      {
+        "id": "transformation_complete",
+        "name": "Trasformazione Completa",
+        "requirement": "Prima vs ultima nota: +50% chiarezza",
+        "icon_type": "cocoon_to_wings",
+        "description": "Maturazione cognitiva"
+      },
+      {
+        "id": "ai_synergy",
+        "name": "Sinergia AI",
+        "requirement": "20+ collaborazioni AI",
+        "icon_type": "human_ai_merge",
+        "description": "Partnership ottimale"
+      },
+      {
+        "id": "monthly_philosopher",
+        "name": "Filosofo Mensile",
+        "requirement": "10+ sessioni introspezione profonda",
+        "icon_type": "thinking_statue",
+        "description": "Saggezza accumulata"
+      }
+    ]
+  }
+}
