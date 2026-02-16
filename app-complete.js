@@ -1,194 +1,193 @@
-/* MindStep v5.0 ELITE - Full Integrated Edition */
+/* MindStep Elite v5.0 - UNIFIED EDITION */
 
+// STATO GLOBALE
 let user = JSON.parse(localStorage.getItem('mindstep_user'));
 let routines = JSON.parse(localStorage.getItem('mindstep_routines') || '[]');
-let walkData = { isActive: false, isPaused: false, startTime: null, elapsedTime: 0, distance: 0, steps: 0, notes: 0, positions: [], lastValidPos: null, introspectIdx: 0 };
-let timerInterval = null;
-let recognition = null;
+let stats = JSON.parse(localStorage.getItem('mindstep_stats') || '{"total_dist":0, "total_steps":0, "badges":[]}');
 
-// --- INIZIALIZZAZIONE ---
+let walk = { 
+    active: false, paused: false, startTime: 0, elapsed: 0, 
+    dist: 0, steps: 0, notes: 0, lastPos: null, introIdx: 0 
+};
+
+let timerInt, recognition;
+
+// 1. INIZIALIZZAZIONE & INTERVISTA
 window.onload = () => {
     if (!user) {
-        document.getElementById('onboarding-view').classList.add('active');
+        document.getElementById('onboarding').classList.add('active');
     } else {
-        document.getElementById('welcome-msg').innerText = `Bentornato, ${user.name}`;
+        document.getElementById('user-display').innerText = `Pro: ${user.name}`;
         initApp();
     }
 };
+
+function finishSetup() {
+    const data = {
+        name: document.getElementById('name').value,
+        age: document.getElementById('age').value,
+        sex: document.getElementById('sex').value,
+        lang: document.getElementById('lang').value
+    };
+    if(!data.name) return alert("Inserisci il tuo nome!");
+    localStorage.setItem('mindstep_user', JSON.stringify(data));
+    location.reload();
+}
 
 function initApp() {
     renderRoutines();
     renderBadges();
     checkWeather();
-    // Inizializza accelerometro per passi
-    if(window.DeviceMotionEvent) window.addEventListener('devicemotion', handlePedometer);
+    if(window.DeviceMotionEvent) window.addEventListener('devicemotion', handleSteps);
 }
 
-function finishOnboarding() {
-    const name = document.getElementById('user-name').value;
-    if(!name) return alert("Inserisci almeno il nome");
-    user = { name, age: document.getElementById('user-age').value, lang: document.getElementById('user-lang').value };
-    localStorage.setItem('mindstep_user', JSON.stringify(user));
-    document.getElementById('onboarding-view').classList.remove('active');
-    location.reload();
-}
-
-// --- NAVIGATION ---
-function switchView(viewId, el) {
-    document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+// 2. NAVIGAZIONE ORIZZONTALE
+function nav(id, el) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById(`view-${viewId}`).classList.add('active');
+    document.getElementById(`view-${id}`).classList.add('active');
     el.classList.add('active');
-    if(viewId === 'performance') renderCalendar();
+    if(id === 'analysis') renderCalendar();
 }
 
-// --- SESSION LOGIC (FIX GPS BUG-001) ---
+// 3. LOGICA SESSIONE & FIX GPS (BUG-001)
 function toggleSession() {
-    const btn = document.getElementById('main-action-btn');
-    if (!walkData.isActive) {
-        startSession();
+    const btn = document.getElementById('btn-session');
+    if (!walk.active) {
+        walk.active = true;
+        walk.startTime = Date.now();
+        timerInt = setInterval(updateTimer, 1000);
+        if(navigator.geolocation) {
+            walk.watchId = navigator.geolocation.watchPosition(updateGPS, null, {enableHighAccuracy:true});
+        }
         btn.innerText = "PAUSA";
-    } else if (!walkData.isPaused) {
-        walkData.isPaused = true;
+    } else if (!walk.paused) {
+        walk.paused = true;
         btn.innerText = "RIPRENDI";
-        btn.style.background = "#ff9f43";
     } else {
-        walkData.isPaused = false;
-        walkData.lastValidPos = null; // FIX BUG-001: Impedisce il salto di distanza
+        walk.paused = false;
+        walk.lastPos = null; // FIX BUG-001: Impedisce il salto di distanza se l'utente si è spostato in pausa
         btn.innerText = "PAUSA";
-        btn.style.background = "var(--primary)";
     }
 }
 
-function startSession() {
-    walkData.isActive = true;
-    walkData.startTime = Date.now();
-    if(navigator.geolocation) {
-        walkData.watchId = navigator.geolocation.watchPosition(updatePos, null, {enableHighAccuracy:true});
-    }
-    timerInterval = setInterval(updateTimer, 1000);
-}
-
-function updatePos(pos) {
-    if(walkData.isPaused) return;
+function updateGPS(pos) {
+    if(walk.paused) return;
     const {latitude: lat, longitude: lon, accuracy} = pos.coords;
     if(accuracy > 30) return;
 
-    if(walkData.lastValidPos) {
-        const d = calcDist(walkData.lastValidPos.lat, walkData.lastValidPos.lon, lat, lon);
-        if(d < 0.05) { // Filtro movimento irreale
-            walkData.distance += d;
-            document.getElementById('dist-display').innerText = walkData.distance.toFixed(2);
+    if(walk.lastPos) {
+        const d = calculateDistance(walk.lastPos.lat, walk.lastPos.lon, lat, lon);
+        if(d < 0.06) { // Solo se il movimento è umano (no glitch GPS)
+            walk.dist += d;
+            document.getElementById('dist').innerText = walk.dist.toFixed(2);
         }
     }
-    walkData.lastValidPos = {lat, lon};
+    walk.lastPos = {lat, lon};
 }
 
-// --- PEDOMETER (FEATURE-001) ---
-let lastTotalAcc = 0;
-function handlePedometer(e) {
-    if(!walkData.isActive || walkData.isPaused) return;
+// 4. CONTAPASSI & TRASCRIZIONE
+function handleSteps(e) {
+    if(!walk.active || walk.paused) return;
     const acc = e.accelerationIncludingGravity;
-    const total = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
-    if(total > 12 && Math.abs(total - lastTotalAcc) > 2) {
-        walkData.steps++;
-        document.getElementById('steps-display').innerText = walkData.steps;
+    const force = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+    if(force > 12) { // Soglia passo
+        walk.steps++;
+        document.getElementById('steps').innerText = walk.steps;
     }
-    lastTotalAcc = total;
 }
 
-// --- INTROSPEZIONE (PSYCHOLOGIST) ---
-const MESSAGES = [
-    {t: 5, m: "Come senti il tuo corpo ora? Lascia andare le tensioni."},
-    {t: 15, m: "Qual è il vero obiettivo di quello che stai pensando?"},
-    {t: 30, m: "Sei in stato di flow. Sfrutta questa chiarezza."}
+function toggleRec() {
+    if(!recognition) {
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = user.lang || 'it-IT';
+        recognition.onresult = (e) => {
+            walk.notes++;
+            document.getElementById('notes').innerText = walk.notes;
+            showPopup("Pensiero archiviato nell'analisi Elite.");
+        };
+    }
+    
+    const btn = document.getElementById('btn-rec');
+    if(btn.classList.contains('active')) {
+        recognition.stop();
+        btn.classList.remove('active');
+    } else {
+        recognition.start();
+        btn.classList.add('active');
+        showPopup("Ascolto attivo...");
+    }
+}
+
+// 5. INTROSPEZIONE & POPUP
+const TIPS = [
+    {t: 5, m: "Respira. Qual è il pensiero che ti sta bloccando?"},
+    {t: 15, m: "Visualizza il tuo obiettivo come se fosse già raggiunto."},
+    {t: 30, m: "Stai camminando verso una versione migliore di te."}
 ];
 
 function updateTimer() {
-    if(walkData.isPaused) return;
-    walkData.elapsedTime = Date.now() - walkData.startTime;
-    const sec = Math.floor((walkData.elapsedTime/1000)%60);
-    const min = Math.floor(walkData.elapsedTime/60000);
-    document.getElementById('timer-display').innerText = `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+    if(walk.paused) return;
+    walk.elapsed = Date.now() - walk.startTime;
+    const m = Math.floor(walk.elapsed/60000);
+    const s = Math.floor((walk.elapsed/1000)%60);
+    document.getElementById('time').innerText = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
 
-    // Pop-up trigger
-    if(MESSAGES[walkData.introspectIdx] && min >= MESSAGES[walkData.introspectIdx].t) {
-        showPopup(MESSAGES[walkData.introspectIdx].m);
-        walkData.introspectIdx++;
+    if(TIPS[walk.introIdx] && m >= TIPS[walk.introIdx].t) {
+        showPopup(TIPS[walk.introIdx].m);
+        walk.introIdx++;
     }
 }
 
 function showPopup(txt) {
-    const p = document.getElementById('introspection-popup');
-    document.getElementById('popup-text').innerText = txt;
-    p.classList.add('visible');
-    setTimeout(() => p.classList.remove('visible'), 6000);
+    const p = document.getElementById('popup');
+    p.querySelector('span').innerText = txt;
+    p.classList.add('show');
+    setTimeout(() => p.classList.remove('show'), 6000);
 }
 
-// --- BRAINSTORMING (REINTEGRATO) ---
-function toggleRecording() {
-    if(isRecording) {
-        recognition.stop();
-        isRecording = false;
-        document.getElementById('rec-btn').classList.remove('recording');
-    } else {
-        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = user.lang || 'it-IT';
-        recognition.onresult = (e) => {
-            walkData.notes++;
-            document.getElementById('notes-display').innerText = walkData.notes;
-            showPopup("Pensiero archiviato nell'analisi AI.");
-        };
-        recognition.start();
-        isRecording = true;
-        document.getElementById('rec-btn').classList.add('recording');
-    }
-}
-
-// --- ROUTINES (REINTEGRATO & FIX BUG-005) ---
+// 6. ROUTINES & CALENDARIO (RIATTIVATI)
 function renderRoutines() {
-    const list = document.getElementById('routine-list');
-    list.innerHTML = routines.map((r, i) => `
+    const container = document.getElementById('routine-list');
+    container.innerHTML = routines.map((r, i) => `
         <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
             <span>${r}</span>
-            <button onclick="deleteRoutine(${i})" style="background:none; border:none; color:#ff4757;">✕</button>
+            <button onclick="delRoutine(${i})" style="background:none; border:none; color:#ff4757;">✕</button>
         </div>
     `).join('');
 }
 
 function addRoutine() {
-    const task = prompt("Cosa vuoi automatizzare?");
+    const task = prompt("Aggiungi un obiettivo quotidiano:");
     if(task) { routines.push(task); localStorage.setItem('mindstep_routines', JSON.stringify(routines)); renderRoutines(); }
 }
 
-function deleteRoutine(i) { routines.splice(i, 1); localStorage.setItem('mindstep_routines', JSON.stringify(routines)); renderRoutines(); }
+function delRoutine(i) { routines.splice(i, 1); localStorage.setItem('mindstep_routines', JSON.stringify(routines)); renderRoutines(); }
 
-// --- CALENDAR & BADGES ---
 function renderCalendar() {
-    const cont = document.getElementById('calendar-container');
-    const days = ['D','L','M','M','G','V','S'];
-    cont.innerHTML = `<div style="display:grid; grid-template-columns: repeat(7, 1fr); text-align:center; font-size:0.7rem;">
-        ${days.map(d => `<div>${d}</div>`).join('')}
-        ${Array.from({length:30}).map((_,i) => `<div style="padding:5px; border:1px solid rgba(255,255,255,0.05);">${i+1}</div>`).join('')}
+    const cal = document.getElementById('calendar');
+    cal.innerHTML = `<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px; text-align:center;">
+        ${['L','M','M','G','V','S','D'].map(d => `<small>${d}</small>`).join('')}
+        ${Array.from({length:28}).map((_, i) => `<div style="padding:5px; background:rgba(255,255,255,0.05); border-radius:4px;">${i+1}</div>`).join('')}
     </div>`;
 }
 
+// 7. BADGE SYSTEM (60 POSTI)
 function renderBadges() {
-    const grid = document.getElementById('badges-grid');
-    const list = [
-        {id:'1', n:'Innesco', icon:'M12 19V5'},
-        {id:'2', n:'Focus', icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'},
-        {id:'3', n:'Elite', icon:'M21 16V8l-9-5-9 5v8l9 5z'}
-    ];
-    grid.innerHTML = list.map(b => `<div class="badge-item"><svg viewBox="0 0 24 24" width="24" fill="none" stroke="currentColor" stroke-width="2"><path d="${b.icon}"/></svg><br>${b.n}</div>`).join('');
+    const grid = document.getElementById('badge-grid');
+    grid.innerHTML = Array.from({length: 60}).map((_, i) => `
+        <div class="badge ${stats.badges.includes(i) ? 'unlocked' : ''}">
+            <svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2l3 7h7l-5 5 2 7-7-4-7 4 2-7-5-5h7z"/></svg>
+            <span style="margin-top:4px;">#${i+1}</span>
+        </div>
+    `).join('');
 }
 
-// UTILS
-function calcDist(lat1, lon1, lat2, lon2) {
+// UTILITIES
+function calculateDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; const dLat = (lat2-lat1)*Math.PI/180; const dLon = (lon2-lon1)*Math.PI/180;
     const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
-
-function checkWeather() { document.getElementById('weather-info').innerText = "Cielo Sereno • 18°C • Ideale per il focus"; }
-function resetApp() { if(confirm("Resettare tutto?")) { localStorage.clear(); location.reload(); } }
+function checkWeather() { document.getElementById('weather').innerText = "18°C • Sereno"; }
+function resetApp() { if(confirm("Cancellare tutto?")) { localStorage.clear(); location.reload(); } }
