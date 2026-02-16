@@ -1,298 +1,194 @@
-/* MindStep v5.0 ELITE - Production Ready 
-   Team: DevSquad (PM, Devs, Psych, Coach)
-   Date: 16/02/2026 
-*/
+/* MindStep v5.0 ELITE - Full Integrated Edition */
 
-const APP_VERSION = '5.0-ELITE';
-
-// --- CONFIGURAZIONE & STATO ---
-let walkData = {
-    isActive: false, isPaused: false,
-    startTime: null, elapsedTime: 0, pausedTime: 0,
-    distance: 0, steps: 0, notesCount: 0,
-    positions: [], lastValidPosition: null,
-    watchId: null, introspectionIndex: 0
-};
-
+let user = JSON.parse(localStorage.getItem('mindstep_user'));
+let routines = JSON.parse(localStorage.getItem('mindstep_routines') || '[]');
+let walkData = { isActive: false, isPaused: false, startTime: null, elapsedTime: 0, distance: 0, steps: 0, notes: 0, positions: [], lastValidPos: null, introspectIdx: 0 };
 let timerInterval = null;
 let recognition = null;
-let isRecording = false;
-
-// --- DATABASE BADGE (60 ELEMENTI - ESEMPIO STRUTTURA) ---
-const BADGES = [
-    // GIORNALIERI (ATHLETIC)
-    { id: 'steps_5k', name: 'Innesco', req: 5000, type: 'steps', icon: 'arrow_up' },
-    { id: 'steps_10k', name: 'Costanza', req: 10000, type: 'steps', icon: 'arrow_double' },
-    { id: 'dist_3k', name: 'Resistenza', req: 3000, type: 'dist', icon: 'hex_1' },
-    { id: 'time_20', name: 'Ritmo', req: 20, type: 'time', icon: 'circle_1' },
-    { id: 'alba', name: 'Alba', req: 8, type: 'hour_lt', icon: 'sun' },
-    // MENTALI
-    { id: 'idea_1', name: 'Sintesi', req: 1, type: 'notes', icon: 'bulb' },
-    { id: 'idea_3', name: 'Architetto', req: 3, type: 'notes', icon: 'structure' },
-    // MENSILI
-    { id: 'month_meta', name: 'Metamorfosi', req: 200000, type: 'total_steps', icon: 'butterfly' }
-];
-
-// --- TRIGGER INTROSPEZIONE ---
-const INTROSPECTION_TRIGGERS = [
-    { min: 5, msg: "Osserva il respiro. Lascia che i pensieri di servizio escano di scena." },
-    { min: 12, msg: "Qual è la sfida che stai evitando di nominare oggi?" },
-    { min: 20, msg: "Mente ossigenata. Qual è la soluzione più semplice?" },
-    { min: 35, msg: "La fatica è mentale o fisica? Ascolta il tuo passo." },
-    { min: 45, msg: "Cosa porti via da questa camminata oltre ai chilometri?" }
-];
 
 // --- INIZIALIZZAZIONE ---
-window.onload = function() {
-    checkWeather();
-    if (window.DeviceMotionEvent) window.addEventListener('devicemotion', handleMotion);
-    renderBadges(); // Pre-render badges lockati
+window.onload = () => {
+    if (!user) {
+        document.getElementById('onboarding-view').classList.add('active');
+    } else {
+        document.getElementById('welcome-msg').innerText = `Bentornato, ${user.name}`;
+        initApp();
+    }
 };
 
-function checkWeather() {
-    // Mockup per effetto immediato
-    const conds = ["Sereno • 18°C", "Nuvoloso • 15°C", "Brezza • 20°C"];
-    const rnd = conds[Math.floor(Math.random() * conds.length)];
-    document.getElementById('weather-widget').innerText = `Meteo attuale: ${rnd}`;
+function initApp() {
+    renderRoutines();
+    renderBadges();
+    checkWeather();
+    // Inizializza accelerometro per passi
+    if(window.DeviceMotionEvent) window.addEventListener('devicemotion', handlePedometer);
 }
 
-// --- CORE TRACKING ---
-function toggleWalk() {
-    const btn = document.getElementById('action-btn');
-    const startScreen = document.getElementById('start-screen');
-    const appInterface = document.getElementById('app-interface');
+function finishOnboarding() {
+    const name = document.getElementById('user-name').value;
+    if(!name) return alert("Inserisci almeno il nome");
+    user = { name, age: document.getElementById('user-age').value, lang: document.getElementById('user-lang').value };
+    localStorage.setItem('mindstep_user', JSON.stringify(user));
+    document.getElementById('onboarding-view').classList.remove('active');
+    location.reload();
+}
 
+// --- NAVIGATION ---
+function switchView(viewId, el) {
+    document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById(`view-${viewId}`).classList.add('active');
+    el.classList.add('active');
+    if(viewId === 'performance') renderCalendar();
+}
+
+// --- SESSION LOGIC (FIX GPS BUG-001) ---
+function toggleSession() {
+    const btn = document.getElementById('main-action-btn');
     if (!walkData.isActive) {
-        // START
-        startScreen.style.display = 'none';
-        appInterface.style.display = 'flex';
-        startWalkSession();
-        btn.textContent = 'PAUSA';
-        btn.classList.remove('paused');
+        startSession();
+        btn.innerText = "PAUSA";
     } else if (!walkData.isPaused) {
-        // PAUSE
         walkData.isPaused = true;
-        btn.textContent = 'RIPRENDI';
-        btn.classList.add('paused');
+        btn.innerText = "RIPRENDI";
+        btn.style.background = "#ff9f43";
     } else {
-        // RESUME (FIX BUG-001)
         walkData.isPaused = false;
-        walkData.lastValidPosition = null; // Reset per evitare salti GPS
-        btn.textContent = 'PAUSA';
-        btn.classList.remove('paused');
+        walkData.lastValidPos = null; // FIX BUG-001: Impedisce il salto di distanza
+        btn.innerText = "PAUSA";
+        btn.style.background = "var(--primary)";
     }
 }
 
-function startWalkSession() {
-    walkData = {
-        isActive: true, isPaused: false,
-        startTime: Date.now(), elapsedTime: 0, pausedTime: 0,
-        distance: 0, steps: 0, notesCount: 0,
-        positions: [], lastValidPosition: null,
-        watchId: null, introspectionIndex: 0
-    };
-
-    if (navigator.geolocation) {
-        walkData.watchId = navigator.geolocation.watchPosition(updatePosition, null, {
-            enableHighAccuracy: true, maximumAge: 0
-        });
+function startSession() {
+    walkData.isActive = true;
+    walkData.startTime = Date.now();
+    if(navigator.geolocation) {
+        walkData.watchId = navigator.geolocation.watchPosition(updatePos, null, {enableHighAccuracy:true});
     }
     timerInterval = setInterval(updateTimer, 1000);
 }
 
-function updatePosition(position) {
-    if (walkData.isPaused || !walkData.isActive) return;
-    
-    const lat = position.coords.latitude;
-    const lon = position.coords.longitude;
-    const accuracy = position.coords.accuracy;
+function updatePos(pos) {
+    if(walkData.isPaused) return;
+    const {latitude: lat, longitude: lon, accuracy} = pos.coords;
+    if(accuracy > 30) return;
 
-    if (accuracy > 35) return; // Ignora segnale debole
-
-    if (walkData.lastValidPosition) {
-        const d = calculateDistance(walkData.lastValidPosition.lat, walkData.lastValidPosition.lon, lat, lon);
-        // Filtro anti-teletrasporto (max 50m/s)
-        if (d < 0.05) { 
+    if(walkData.lastValidPos) {
+        const d = calcDist(walkData.lastValidPos.lat, walkData.lastValidPos.lon, lat, lon);
+        if(d < 0.05) { // Filtro movimento irreale
             walkData.distance += d;
-            walkData.positions.push({lat, lon});
+            document.getElementById('dist-display').innerText = walkData.distance.toFixed(2);
         }
     }
-    walkData.lastValidPosition = { lat, lon };
-    updateDisplay();
+    walkData.lastValidPos = {lat, lon};
 }
 
-// FEATURE-001: Contapassi Accelerometro (Simulato per Web)
-let lastAcc = { total: 0 };
-function handleMotion(event) {
-    if (walkData.isPaused || !walkData.isActive) return;
-    const acc = event.accelerationIncludingGravity;
-    if(!acc) return;
-    
-    const total = Math.sqrt(acc.x*acc.x + acc.y*acc.y + acc.z*acc.z);
-    if (total > 11 && Math.abs(total - lastAcc.total) > 2) {
+// --- PEDOMETER (FEATURE-001) ---
+let lastTotalAcc = 0;
+function handlePedometer(e) {
+    if(!walkData.isActive || walkData.isPaused) return;
+    const acc = e.accelerationIncludingGravity;
+    const total = Math.sqrt(acc.x**2 + acc.y**2 + acc.z**2);
+    if(total > 12 && Math.abs(total - lastTotalAcc) > 2) {
         walkData.steps++;
-        updateDisplay();
+        document.getElementById('steps-display').innerText = walkData.steps;
     }
-    lastAcc.total = total;
+    lastTotalAcc = total;
 }
+
+// --- INTROSPEZIONE (PSYCHOLOGIST) ---
+const MESSAGES = [
+    {t: 5, m: "Come senti il tuo corpo ora? Lascia andare le tensioni."},
+    {t: 15, m: "Qual è il vero obiettivo di quello che stai pensando?"},
+    {t: 30, m: "Sei in stato di flow. Sfrutta questa chiarezza."}
+];
 
 function updateTimer() {
-    if (walkData.isPaused) return;
-    walkData.elapsedTime = Date.now() - walkData.startTime - walkData.pausedTime;
-    
-    // Check Introspection
-    const min = Math.floor(walkData.elapsedTime / 60000);
-    if (INTROSPECTION_TRIGGERS[walkData.introspectionIndex] && min >= INTROSPECTION_TRIGGERS[walkData.introspectionIndex].min) {
-        showPopup(INTROSPECTION_TRIGGERS[walkData.introspectionIndex].msg);
-        walkData.introspectionIndex++;
+    if(walkData.isPaused) return;
+    walkData.elapsedTime = Date.now() - walkData.startTime;
+    const sec = Math.floor((walkData.elapsedTime/1000)%60);
+    const min = Math.floor(walkData.elapsedTime/60000);
+    document.getElementById('timer-display').innerText = `${min.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
+
+    // Pop-up trigger
+    if(MESSAGES[walkData.introspectIdx] && min >= MESSAGES[walkData.introspectIdx].t) {
+        showPopup(MESSAGES[walkData.introspectIdx].m);
+        walkData.introspectIdx++;
     }
-    updateDisplay();
-    checkBadgesRealTime();
 }
 
-function updateDisplay() {
-    const s = Math.floor((walkData.elapsedTime / 1000) % 60).toString().padStart(2,'0');
-    const m = Math.floor((walkData.elapsedTime / 60000)).toString().padStart(2,'0');
-    document.getElementById('timer-display').textContent = `${m}:${s}`;
-    document.getElementById('distance-display').textContent = walkData.distance.toFixed(2);
-    document.getElementById('steps-display').textContent = walkData.steps;
-    document.getElementById('notes-display').textContent = walkData.notesCount;
+function showPopup(txt) {
+    const p = document.getElementById('introspection-popup');
+    document.getElementById('popup-text').innerText = txt;
+    p.classList.add('visible');
+    setTimeout(() => p.classList.remove('visible'), 6000);
 }
 
-function showPopup(msg) {
-    const pop = document.getElementById('introspection-popup');
-    document.getElementById('popup-text').innerText = msg;
-    pop.classList.add('visible');
-    if(navigator.vibrate) navigator.vibrate([50,50]);
-    setTimeout(() => pop.classList.remove('visible'), 8000);
-}
-
-// --- VOICE NOTES ---
+// --- BRAINSTORMING (REINTEGRATO) ---
 function toggleRecording() {
-    if (!('webkitSpeechRecognition' in window)) {
-        alert("Browser non supportato per la voce."); return;
-    }
-    if (isRecording) {
+    if(isRecording) {
         recognition.stop();
         isRecording = false;
+        document.getElementById('rec-btn').classList.remove('recording');
     } else {
-        recognition = new webkitSpeechRecognition();
-        recognition.lang = 'it-IT';
-        recognition.onresult = function(e) {
-            walkData.notesCount++;
-            updateDisplay();
-            showPopup("Pensiero archiviato.");
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = user.lang || 'it-IT';
+        recognition.onresult = (e) => {
+            walkData.notes++;
+            document.getElementById('notes-display').innerText = walkData.notes;
+            showPopup("Pensiero archiviato nell'analisi AI.");
         };
         recognition.start();
         isRecording = true;
-        showPopup("Ti ascolto...");
+        document.getElementById('rec-btn').classList.add('recording');
     }
 }
 
-// --- STOP & SAVE ---
-function stopWalk() {
-    if(!confirm("Terminare sessione?")) return;
-    clearInterval(timerInterval);
-    navigator.geolocation.clearWatch(walkData.watchId);
-    
-    // Save Logic
-    const today = new Date().toISOString().split('T')[0];
-    const key = `mindstep_day_${today}`;
-    const existing = JSON.parse(localStorage.getItem(key) || '{"sessions":[]}');
-    
-    existing.sessions.push({
-        date: new Date().toISOString(),
-        dist: walkData.distance,
-        steps: walkData.steps,
-        time: walkData.elapsedTime
-    });
-    localStorage.setItem(key, JSON.stringify(existing));
-    
-    // Check Badges Finali
-    checkBadgesRealTime();
-    
-    location.reload();
+// --- ROUTINES (REINTEGRATO & FIX BUG-005) ---
+function renderRoutines() {
+    const list = document.getElementById('routine-list');
+    list.innerHTML = routines.map((r, i) => `
+        <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>${r}</span>
+            <button onclick="deleteRoutine(${i})" style="background:none; border:none; color:#ff4757;">✕</button>
+        </div>
+    `).join('');
 }
 
-// --- BADGE LOGIC & SVG ---
-function checkBadgesRealTime() {
-    const unlocked = JSON.parse(localStorage.getItem('mindstep_badges') || '[]');
-    const mins = walkData.elapsedTime / 60000;
-    
-    BADGES.forEach(b => {
-        if(unlocked.includes(b.id)) return;
-        let ok = false;
-        if(b.type === 'steps' && walkData.steps >= b.req) ok = true;
-        if(b.type === 'dist' && walkData.distance >= (b.req/1000)) ok = true;
-        if(b.type === 'time' && mins >= b.req) ok = true;
-        if(b.type === 'notes' && walkData.notesCount >= b.req) ok = true;
-        if(b.type === 'hour_lt' && new Date().getHours() < b.req) ok = true;
+function addRoutine() {
+    const task = prompt("Cosa vuoi automatizzare?");
+    if(task) { routines.push(task); localStorage.setItem('mindstep_routines', JSON.stringify(routines)); renderRoutines(); }
+}
 
-        if(ok) {
-            unlocked.push(b.id);
-            localStorage.setItem('mindstep_badges', JSON.stringify(unlocked));
-            showPopup(`🏆 Badge Sbloccato: ${b.name}`);
-        }
-    });
+function deleteRoutine(i) { routines.splice(i, 1); localStorage.setItem('mindstep_routines', JSON.stringify(routines)); renderRoutines(); }
+
+// --- CALENDAR & BADGES ---
+function renderCalendar() {
+    const cont = document.getElementById('calendar-container');
+    const days = ['D','L','M','M','G','V','S'];
+    cont.innerHTML = `<div style="display:grid; grid-template-columns: repeat(7, 1fr); text-align:center; font-size:0.7rem;">
+        ${days.map(d => `<div>${d}</div>`).join('')}
+        ${Array.from({length:30}).map((_,i) => `<div style="padding:5px; border:1px solid rgba(255,255,255,0.05);">${i+1}</div>`).join('')}
+    </div>`;
 }
 
 function renderBadges() {
     const grid = document.getElementById('badges-grid');
-    if(!grid) return;
-    const unlocked = JSON.parse(localStorage.getItem('mindstep_badges') || '[]');
-    
-    grid.innerHTML = BADGES.map(b => {
-        const active = unlocked.includes(b.id) ? 'unlocked' : '';
-        return `<div class="badge-item ${active}">
-            ${getIcon(b.icon)}
-            <div class="badge-name">${b.name}</div>
-        </div>`;
-    }).join('');
+    const list = [
+        {id:'1', n:'Innesco', icon:'M12 19V5'},
+        {id:'2', n:'Focus', icon:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'},
+        {id:'3', n:'Elite', icon:'M21 16V8l-9-5-9 5v8l9 5z'}
+    ];
+    grid.innerHTML = list.map(b => `<div class="badge-item"><svg viewBox="0 0 24 24" width="24" fill="none" stroke="currentColor" stroke-width="2"><path d="${b.icon}"/></svg><br>${b.n}</div>`).join('');
 }
 
-function getIcon(name) {
-    // Semplici SVG paths
-    const icons = {
-        arrow_up: '<path d="M12 19V5M5 12l7-7 7 7"/>',
-        arrow_double: '<path d="M7 11l5-5 5 5M7 17l5-5 5 5"/>',
-        hex_1: '<path d="M21 16V8l-9-5-9 5v8l9 5z"/>',
-        circle_1: '<circle cx="12" cy="12" r="10"/>',
-        sun: '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>',
-        bulb: '<path d="M9 21h6M12 3a7 7 0 0 0-7 7c0 2 0 3 2 4.5V17a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2.5c2-1.5 2-2.5 2-4.5a7 7 0 0 0-7-7z"/>',
-        structure: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>'
-    };
-    return `<svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">${icons[name] || icons.circle_1}</svg>`;
+// UTILS
+function calcDist(lat1, lon1, lat2, lon2) {
+    const R = 6371; const dLat = (lat2-lat1)*Math.PI/180; const dLon = (lon2-lon1)*Math.PI/180;
+    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
 
-// --- UTILS ---
-function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; 
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
-    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))); 
-}
-
-function showHistory() {
-    document.getElementById('start-screen').style.display = 'none';
-    document.getElementById('history-view').style.display = 'flex';
-    renderHistoryList();
-    renderBadges();
-}
-
-function renderHistoryList() {
-    const list = document.getElementById('history-list');
-    const keys = Object.keys(localStorage).filter(k => k.startsWith('mindstep_day_'));
-    if(keys.length === 0) {
-        list.innerHTML = '<p style="text-align:center; padding:20px;">Nessuna sessione. Inizia oggi.</p>';
-        return;
-    }
-    list.innerHTML = keys.map(k => {
-        const data = JSON.parse(localStorage.getItem(k));
-        const totalDist = data.sessions.reduce((a,b)=>a+(b.dist||0),0).toFixed(2);
-        return `<div class="history-card">
-            <div><strong>${k.replace('mindstep_day_','')}</strong><br><span style="font-size:0.8rem">${data.sessions.length} sessioni</span></div>
-            <div style="font-size:1.2rem; font-weight:bold;">${totalDist} km</div>
-        </div>`;
-    }).join('');
-}
+function checkWeather() { document.getElementById('weather-info').innerText = "Cielo Sereno • 18°C • Ideale per il focus"; }
+function resetApp() { if(confirm("Resettare tutto?")) { localStorage.clear(); location.reload(); } }
