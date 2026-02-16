@@ -2,1517 +2,262 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MindStep">
-<meta name="theme-color" content="#0EA5E9">
-<meta name="description" content="Transform movement into mindwork. AI-powered cognitive productivity.">
+<meta name="theme-color" content="#0a1128">
+<meta name="description" content="MindStep Elite: Mental Performance Walking.">
 <link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./icon-192.png">
-<title>MindStep - Mindwalking Intelligence</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>MindStep Elite</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* --- MINDSTEP ELITE CSS PATCH --- */
+/* --- MINDSTEP ELITE STYLES --- */
+:root {
+    --primary: #00d4ff; 
+    --primary-dark: #00b4d8;
+    --secondary: #5ce1e6;
+    --navy-dark: #0a1128;
+    --navy-medium: #1a2357;
+    --bg: #0a1128; /* Dark Mode Default per Elite */
+    --text: #ffffff;
+    --text-secondary: #a0aaec;
+    --border: #2b3a7f;
+    --safe-top: env(safe-area-inset-top);
+    --safe-bottom: env(safe-area-inset-bottom);
+}
 
-/* Safe Area Fix per iPhone 15/16 */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+    font-family: 'Inter', sans-serif;
     background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 0;
+    padding-top: var(--safe-top);
+    padding-bottom: var(--safe-bottom);
+    overflow-x: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Header che non si sovrappone */
-header {
-    padding-top: max(15px, env(safe-area-inset-top)); 
-    height: auto;
-    min-height: 70px;
+/* UI Structure */
+#start-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    background: radial-gradient(circle at top, #1a2357 0%, #0a1128 70%);
 }
 
-/* Nuovi Badge Geometrici (No Emojis) */
+#app-interface, #history-view {
+    display: none; /* Hidden by default */
+    flex: 1;
+    flex-direction: column;
+    padding: 20px;
+}
+
+/* Typography */
+h1 { font-size: 2.5rem; margin: 0 0 10px 0; letter-spacing: -1px; background: linear-gradient(to right, #fff, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 20px; }
+p { color: var(--text-secondary); line-height: 1.5; }
+
+/* Metrics Grid */
+.metrics-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+.metric-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 15px;
+    text-align: center;
+}
+.metric-val { font-size: 1.8rem; font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
+.metric-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-top: 5px; }
+
+/* Action Button */
+.main-btn {
+    background: var(--primary);
+    color: var(--navy-dark);
+    border: none;
+    padding: 18px 40px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+    transition: transform 0.2s;
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto;
+}
+.main-btn:active { transform: scale(0.96); }
+.main-btn.paused { background: #ff4757; color: white; box-shadow: 0 0 20px rgba(255, 71, 87, 0.3); }
+
+/* Badge Grid (Geometric) */
 .badge-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 15px;
-    padding: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
+    padding: 10px 0;
 }
-
 .badge-item {
     aspect-ratio: 1;
-    background: var(--bg-secondary);
+    background: rgba(255,255,255,0.03);
     border: 1px solid var(--border);
-    border-radius: 12px; /* Soft geometric */
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    opacity: 0.5; /* Locked state */
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    position: relative;
-    overflow: hidden;
+    opacity: 0.4;
+    transition: all 0.3s ease;
 }
-
 .badge-item.unlocked {
     opacity: 1;
     border-color: var(--primary);
-    background: linear-gradient(135deg, rgba(0,212,255,0.05) 0%, rgba(59,79,160,0.1) 100%);
-    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
-    transform: translateY(-2px);
+    background: rgba(0, 212, 255, 0.1);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
+}
+.badge-icon { width: 32px; height: 32px; margin-bottom: 5px; stroke: currentColor; }
+.badge-name { font-size: 9px; text-transform: uppercase; font-weight: 600; text-align: center; }
+
+/* History List */
+.history-card {
+    background: rgba(255,255,255,0.05);
+    border-left: 3px solid var(--primary);
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.badge-icon {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 8px;
-    color: var(--text-secondary);
-}
-
-.badge-item.unlocked .badge-icon {
-    color: var(--primary);
-    filter: drop-shadow(0 0 5px rgba(0,212,255,0.4));
-}
-
-.badge-name {
-    font-size: 10px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-align: center;
-}
-
-/* Pop-up Introspezione (Stile Dynamic Island) */
+/* Introspection Popup */
 #introspection-popup {
     position: fixed;
-    top: max(20px, env(safe-area-inset-top));
+    top: max(20px, var(--safe-top));
     left: 50%;
-    transform: translateX(-50%) translateY(-150%); /* Nascosto in alto */
+    transform: translate(-50%, -200%);
     width: 90%;
-    max-width: 400px;
-    background: rgba(15, 20, 25, 0.95); /* Quasi nero */
-    backdrop-filter: blur(10px);
+    max-width: 380px;
+    background: rgba(15, 20, 25, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
     color: white;
     padding: 16px 20px;
-    border-radius: 30px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     z-index: 9999;
-    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     align-items: center;
-    gap: 12px;
-    border: 1px solid rgba(255,255,255,0.1);
+    gap: 15px;
 }
-
-#introspection-popup.visible {
-    transform: translateX(-50%) translateY(10px);
+#introspection-popup.visible { transform: translate(-50%, 10px); }
+.pulse-dot {
+    width: 8px; height: 8px; background: var(--primary); border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(0,212,255,0.7);
+    animation: pulse 2s infinite;
 }
+@keyframes pulse { 0% {box-shadow: 0 0 0 0 rgba(0,212,255,0.7);} 70% {box-shadow: 0 0 0 10px transparent;} 100% {box-shadow: 0 0 0 0 transparent;} }
 
-#introspection-popup .icon-pulse {
-    width: 10px;
-    height: 10px;
-    background-color: var(--primary);
-    border-radius: 50%;
-    box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.7);
-    animation: pulse-cyan 2s infinite;
+/* Nav Bottom (Only visible inside app) */
+.nav-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    padding-bottom: var(--safe-bottom);
+    background: var(--navy-dark);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around;
+    padding-top: 15px; height: calc(60px + var(--safe-bottom));
 }
-
-@keyframes pulse-cyan {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 212, 255, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 212, 255, 0); }
-}
-  :root{
---primary:#0EA5E9;--primary-hover:#0284C7;--secondary:#06B6D4;--accent:#8B5CF6;
---success:#10B981;--warning:#F59E0B;--danger:#EF4444;
---bg-1:#FFFFFF;--bg-2:#F9FAFB;--bg-3:#F3F4F6;
---text-1:#111827;--text-2:#6B7280;--text-3:#9CA3AF;
---border-1:rgba(0,0,0,0.06);--border-2:rgba(0,0,0,0.04);
---shadow-xs:0 1px 2px rgba(0,0,0,0.04);--shadow-sm:0 2px 4px rgba(0,0,0,0.05);
---shadow-md:0 4px 6px rgba(0,0,0,0.05);--shadow-lg:0 10px 15px rgba(0,0,0,0.08);
---radius-sm:0.375rem;--radius-md:0.5rem;--radius-lg:0.75rem;--radius-xl:1rem;
---transition:200ms cubic-bezier(0.4,0,0.2,1)
-}
-[data-theme=dark]{
---primary:#38BDF8;--primary-hover:#0EA5E9;--secondary:#22D3EE;--accent:#A78BFA;
---success:#34D399;--warning:#FBBF24;--danger:#F87171;
---bg-1:#0F172A;--bg-2:#1E293B;--bg-3:#334155;
---text-1:#F1F5F9;--text-2:#CBD5E1;--text-3:#94A3B8;
---border-1:rgba(255,255,255,0.1);--border-2:rgba(255,255,255,0.06);
---shadow-xs:0 1px 2px rgba(0,0,0,0.3);--shadow-sm:0 2px 4px rgba(0,0,0,0.4);
---shadow-md:0 4px 6px rgba(0,0,0,0.4);--shadow-lg:0 10px 15px rgba(0,0,0,0.5)
-}
-@media(prefers-color-scheme:dark){[data-theme=auto]{
---primary:#38BDF8;--bg-1:#0F172A;--bg-2:#1E293B;--bg-3:#334155;
---text-1:#F1F5F9;--text-2:#CBD5E1;--text-3:#94A3B8;
---border-1:rgba(255,255,255,0.1);--border-2:rgba(255,255,255,0.06)
-}}
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{font-family:Inter,-apple-system,sans-serif;background:var(--bg-1);color:var(--text-1);line-height:1.6;overflow-x:hidden;padding-top:env(safe-area-inset-top);padding-top:calc(env(safe-area-inset-top) + 130px)}
-.screen{display:none;min-height:100vh;padding:1rem 1.25rem 6rem;scroll-margin-top:130px}
-.screen.active{display:block;animation:fadeIn .25s ease-out}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.container{max-width:42rem;margin:0 auto}
-
-/* Header Professional */
-.app-header{position:fixed;top:env(safe-area-inset-top,0);left:0;right:0;background:var(--bg-1);border-bottom:1px solid var(--border-1);z-index:1000;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.header-top{padding:0.875rem 1.25rem;display:flex;justify-content:space-between;align-items:center;max-width:42rem;margin:0 auto}
-.header-left{display:flex;align-items:center;gap:0.625rem}
-.logo-mark{width:1.75rem;height:1.75rem}
-.app-name{font-size:1.125rem;font-weight:600;color:var(--text-1);letter-spacing:-0.01em}
-.header-right{display:flex;align-items:center;gap:0.75rem;font-size:0.8125rem;color:var(--text-2);font-weight:500}
-.weather-badge{display:flex;align-items:center;gap:0.375rem;padding:0.25rem 0.625rem;background:var(--bg-2);border-radius:var(--radius-md);border:1px solid var(--border-2)}
-.streak-badge{display:flex;align-items:center;gap:0.375rem;padding:0.25rem 0.625rem;background:linear-gradient(135deg,rgba(14,165,233,0.08),rgba(6,182,212,0.08));border:1px solid rgba(14,165,233,0.15);border-radius:var(--radius-md);color:var(--primary);font-weight:600}
-
-/* Nav Professional */
-.nav-bar{display:flex;justify-content:space-around;padding:0.5rem 0.25rem;background:var(--bg-1);border-top:1px solid var(--border-2);max-width:42rem;margin:0 auto}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:0.25rem;padding:0.5rem;cursor:pointer;transition:var(--transition);border-radius:var(--radius-md);color:var(--text-3);font-size:0.6875rem;font-weight:500}
-.nav-item:hover{color:var(--text-2);background:var(--bg-2)}
-.nav-item.active{color:var(--primary);background:rgba(14,165,233,0.06)}
-.nav-icon{width:1.25rem;height:1.25rem;stroke-width:2}
-
-/* Cards Professional */
-.card{background:var(--bg-1);border:1px solid var(--border-1);border-radius:var(--radius-lg);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--shadow-xs);transition:var(--transition)}
-.card:hover{box-shadow:var(--shadow-sm)}
-.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;cursor:pointer}
-.card-title{display:flex;align-items:center;gap:0.625rem;font-size:1rem;font-weight:600;color:var(--text-1)}
-.card-icon{width:1.125rem;height:1.125rem;color:var(--primary);stroke-width:2}
-.expand-btn{width:1.75rem;height:1.75rem;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);background:var(--bg-2);transition:var(--transition);color:var(--text-3)}
-.expand-btn:hover{background:var(--bg-3);color:var(--text-2)}
-.expand-btn.rotated{transform:rotate(180deg)}
-.expandable{max-height:0;overflow:hidden;transition:max-height .35s ease-out}
-.expandable.expanded{max-height:3000px}
-
-/* Timer Professional */
-.timer-section{display:flex;flex-direction:column;align-items:center;gap:1.5rem;padding:1.5rem 0}
-.timer-ring-container{position:relative;width:11rem;height:11rem}
-.timer-ring{transform:rotate(-90deg)}
-.timer-track{fill:none;stroke:var(--bg-3);stroke-width:6}
-.timer-progress{fill:none;stroke:url(#timer-gradient);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .3s ease}
-.timer-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
-.timer-value{font-size:2rem;font-weight:600;font-family:'SF Mono',Monaco,monospace;color:var(--text-1);letter-spacing:-0.02em;line-height:1}
-.timer-label{font-size:0.6875rem;color:var(--text-3);margin-top:0.25rem;font-weight:500;text-transform:uppercase;letter-spacing:0.05em}
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;width:100%}
-.stat-box{text-align:center;padding:1rem;background:var(--bg-2);border-radius:var(--radius-md);border:1px solid var(--border-2)}
-.stat-num{font-size:1.5rem;font-weight:600;color:var(--text-1);line-height:1}
-.stat-lbl{font-size:0.6875rem;color:var(--text-3);margin-top:0.375rem;text-transform:uppercase;letter-spacing:0.05em;font-weight:500}
-
-/* Buttons Professional */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.75rem 1.25rem;border:none;border-radius:var(--radius-md);font:inherit;font-weight:600;font-size:0.875rem;cursor:pointer;transition:var(--transition)}
-.btn:active{transform:translateY(1px)}
-.btn-primary{background:var(--primary);color:#fff;box-shadow:var(--shadow-sm)}
-.btn-primary:hover{background:var(--primary-hover);box-shadow:var(--shadow-md)}
-.btn-secondary{background:var(--bg-2);color:var(--text-1);border:1px solid var(--border-1)}
-.btn-secondary:hover{background:var(--bg-3)}
-.btn-outline{background:transparent;border:1px solid var(--border-1);color:var(--text-2)}
-.btn-outline:hover{background:var(--bg-2);color:var(--text-1)}
-.btn:disabled{opacity:0.5;cursor:not-allowed}
-.btn-group{display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem}
-
-/* Routine Items Professional */
-.routine-list{display:flex;flex-direction:column;gap:0.625rem}
-.routine-item{display:flex;align-items:center;gap:0.75rem;padding:0.875rem;background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--radius-md);cursor:pointer;transition:var(--transition)}
-.routine-item:hover{background:var(--bg-3)}
-.routine-item.completed{background:rgba(16,185,129,0.06);border-color:rgba(16,185,129,0.2)}
-.routine-check{width:1.125rem;height:1.125rem;cursor:pointer;accent-color:var(--success)}
-.routine-text{flex:1;font-size:0.9375rem;font-weight:500;color:var(--text-1)}
-.routine-item.completed .routine-text{text-decoration:line-through;opacity:0.6;color:var(--text-3)}
-
-/* Progress Professional */
-.progress-wrap{margin:1.25rem 0}
-.progress-track{background:var(--bg-2);height:0.5rem;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border-2);position:relative}
-.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));border-radius:var(--radius-md);transition:width .5s ease-out}
-.progress-info{text-align:center;margin-top:0.625rem;font-size:0.875rem;font-weight:500}
-.progress-pct{font-size:1.25rem;font-weight:600;color:var(--primary)}
-
-/* Badges Professional - Mindwalking */
-.badges-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;max-height:25rem;overflow-y:auto;padding-right:0.25rem}
-.badge{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--radius-lg);padding:0.75rem;cursor:pointer;transition:var(--transition);position:relative}
-.badge:hover{border-color:var(--border-1);box-shadow:var(--shadow-sm)}
-.badge.unlocked{background:linear-gradient(135deg,var(--bg-1),var(--bg-2));border-color:var(--primary);box-shadow:0 0 0 1px var(--primary),var(--shadow-sm)}
-.badge-icon-wrap{width:2.5rem;height:2.5rem;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);margin-bottom:0.5rem}
-.badge.unlocked .badge-icon-wrap{background:var(--primary);color:#fff}
-.badge-icon-wrap svg{width:1.5rem;height:1.5rem}
-.badge-name{font-size:0.6875rem;font-weight:600;text-align:center;color:var(--text-2);line-height:1.2}
-.badge.unlocked .badge-name{color:var(--text-1)}
-
-/* Week Grid Professional */
-.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0.5rem;margin-bottom:1rem}
-.day-box{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--radius-md);font-size:0.8125rem;font-weight:500;cursor:pointer;transition:var(--transition);color:var(--text-3)}
-.day-box:hover{background:var(--bg-3);color:var(--text-2)}
-.day-box.active{background:linear-gradient(135deg,var(--success),#059669);border-color:var(--success);color:#fff;box-shadow:var(--shadow-sm)}
-.day-name{font-size:0.625rem;opacity:0.7;margin-bottom:0.125rem}
-
-/* Modals Professional */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(8px);z-index:2000;align-items:center;justify-content:center;padding:1.25rem}
-.modal.active{display:flex;animation:fadeIn .25s}
-.modal-box{background:var(--bg-1);border:1px solid var(--border-1);border-radius:var(--radius-xl);padding:1.75rem;max-width:26rem;width:100%;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem}
-.modal-title{font-size:1.25rem;font-weight:600;color:var(--text-1)}
-.modal-close{width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-md);background:var(--bg-2);cursor:pointer;transition:var(--transition);border:none;color:var(--text-3)}
-.modal-close:hover{background:var(--bg-3);color:var(--text-2)}
-
-/* Forms Professional */
-.form-group{margin-bottom:1.125rem}
-.form-label{display:block;font-size:0.8125rem;font-weight:600;color:var(--text-2);margin-bottom:0.5rem}
-input,select,textarea{width:100%;padding:0.75rem;border:1px solid var(--border-1);border-radius:var(--radius-md);font:inherit;background:var(--bg-1);color:var(--text-1);transition:var(--transition);font-size:0.9375rem}
-input:focus,select:focus,textarea:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 3px rgba(14,165,233,0.1)}
-textarea{resize:vertical;min-height:7.5rem}
-
-/* Settings Professional */
-.settings-list{display:flex;flex-direction:column;gap:0.5rem}
-.setting-item{display:flex;align-items:center;justify-content:space-between;padding:1rem;background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--radius-md);cursor:pointer;transition:var(--transition)}
-.setting-item:hover{background:var(--bg-3)}
-.setting-left{display:flex;align-items:center;gap:0.75rem}
-.setting-icon{width:1.125rem;height:1.125rem}
-.setting-text{font-weight:500;font-size:0.9375rem;color:var(--text-1)}
-
-/* Theme Toggle Professional */
-.theme-picker{display:flex;gap:0.25rem;background:var(--bg-2);padding:0.25rem;border-radius:var(--radius-md);border:1px solid var(--border-2)}
-.theme-opt{padding:0.5rem 1rem;border-radius:var(--radius-sm);cursor:pointer;font-size:0.8125rem;font-weight:600;transition:var(--transition);color:var(--text-3);border:1px solid transparent}
-.theme-opt:hover{color:var(--text-2)}
-.theme-opt.active{background:var(--bg-1);color:var(--primary);border-color:var(--border-1);box-shadow:var(--shadow-xs)}
-
-/* Pre-Storm Banner */
-.prestorm-banner{position:fixed;top:calc(env(safe-area-inset-top) + 130px);left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:1rem 1.5rem;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);z-index:1500;max-width:90%;animation:slideDown .3s;display:flex;align-items:center;gap:1rem}
-@keyframes slideDown{from{transform:translate(-50%,-100%);opacity:0}to{transform:translate(-50%,0);opacity:1}}
-.prestorm-icon{font-size:1.5rem}
-.prestorm-text{flex:1}
-.prestorm-title{font-size:0.9375rem;font-weight:700;margin-bottom:0.25rem}
-.prestorm-desc{font-size:0.8125rem;opacity:0.9}
-.prestorm-actions{display:flex;gap:0.5rem}
-.prestorm-btn{padding:0.5rem 1rem;border-radius:var(--radius-md);font-weight:600;font-size:0.8125rem;cursor:pointer;transition:var(--transition);border:none}
-.prestorm-btn-primary{background:#fff;color:var(--primary)}
-.prestorm-btn-secondary{background:rgba(255,255,255,0.2);color:#fff}
-
-/* Walking Mode UI */
-body.walking-mode{background:var(--bg-3)}
-body.walking-mode .timer-value{font-size:3rem}
-body.walking-mode .stat-num{font-size:2rem}
-body.walking-mode #brainstormNotes{font-size:1.125rem;line-height:1.8}
-
-/* Empty States */
-.empty-state{text-align:center;padding:3.75rem 1.25rem;color:var(--text-3)}
-.empty-icon{width:4rem;height:4rem;margin:0 auto 1.25rem;opacity:0.3}
-.empty-title{font-size:1.125rem;font-weight:600;margin-bottom:0.5rem;color:var(--text-2)}
-.empty-desc{font-size:0.875rem;line-height:1.6}
-
-/* AI Options Grid */
-.ai-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0.75rem;margin:1rem 0}
-.ai-card{display:flex;flex-direction:column;align-items:center;gap:0.625rem;padding:1rem;background:var(--bg-2);border:1px solid var(--border-2);border-radius:var(--radius-md);cursor:pointer;transition:var(--transition);text-decoration:none;color:var(--text-1)}
-.ai-card:hover{border-color:var(--border-1);box-shadow:var(--shadow-sm);transform:translateY(-2px)}
-.ai-logo{width:2.5rem;height:2.5rem;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;font-size:1.25rem}
-.ai-name{font-size:0.8125rem;font-weight:600}
-
-.hidden{display:none!important}
-.version{position:fixed;bottom:0.625rem;left:0.625rem;background:rgba(0,0,0,0.6);color:#fff;padding:0.25rem 0.625rem;border-radius:var(--radius-md);font-size:0.6875rem;z-index:999;font-weight:600}
-@media(max-width:640px){
-body{padding-top:calc(env(safe-area-inset-top) + 120px)}
-.header-top{padding:0.75rem 1rem}
-.app-name{font-size:1rem}
-.screen{padding:0.875rem 1rem 5rem}
-.timer-ring-container{width:10rem;height:10rem}
-.timer-value{font-size:1.75rem}
-.badges-grid{grid-template-columns:repeat(2,1fr)}
-}
+.nav-item { color: var(--text-secondary); font-size: 0.7rem; text-align: center; background: none; border: none; }
+.nav-item.active { color: var(--primary); }
 </style>
 </head>
 <body>
-<div class="version">v5.2</div>
 
-<!-- Pre-Storm Banner (hidden by default) -->
-<div id="prestormBanner" class="prestorm-banner hidden">
-<div class="prestorm-icon">🧠</div>
-<div class="prestorm-text">
-<div class="prestorm-title">Pre-Storm Ready</div>
-<div class="prestorm-desc">Sei in movimento. Attiviamo la modalità creativa?</div>
-</div>
-<div class="prestorm-actions">
-<button class="prestorm-btn prestorm-btn-primary" onclick="activatePreStorm()">Attiva</button>
-<button class="prestorm-btn prestorm-btn-secondary" onclick="dismissPreStorm()">Non ora</button>
-</div>
-</div>
+<div id="start-screen">
+    <div style="margin-bottom: 40px;">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#00d4ff" stroke-width="1.5">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+        <h1>MindStep</h1>
+        <p style="font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase;">Mental Performance Walking</p>
+    </div>
+    
+    <div id="weather-widget" style="margin-bottom:30px; font-size: 0.9rem; color: var(--secondary);">
+        Analisi meteo in corso...
+    </div>
 
-<!-- Header Professional -->
-<header class="app-header">
-<div class="header-top">
-<div class="header-left">
-<svg class="logo-mark" viewBox="0 0 28 28"><path d="M6 14Q9 11 12 14T18 14T24 14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" style="color:var(--primary)"/><path d="M7 19Q12 17 17 19Q20 20 24 19" stroke="currentColor" stroke-width="1.5" fill="none" stroke-dasharray="2,2" style="color:var(--secondary)"/></svg>
-<span class="app-name" id="appName">MindStep</span>
-</div>
-<div class="header-right">
-<div class="weather-badge" id="weatherBadge"><span id="weatherIcon">⛅</span><span id="weatherTemp">--°</span></div>
-<div class="streak-badge"><span>🔥</span><span id="streakCount">0</span></div>
-</div>
-</div>
-<nav class="nav-bar">
-<div class="nav-item active" onclick="switchTab('home')" id="navHome">
-<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-<span>Home</span>
-</div>
-<div class="nav-item" onclick="switchTab('history')" id="navHistory">
-<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-<span>Storico</span>
-</div>
-<div class="nav-item" onclick="switchTab('data')" id="navData">
-<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-<span>Dati</span>
-</div>
-<div class="nav-item" onclick="switchTab('goals')" id="navGoals">
-<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-<span>Obiettivi</span>
-</div>
-<div class="nav-item" onclick="switchTab('more')" id="navMore">
-<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-<span>Altro</span>
-</div>
-</nav>
-</header>
-
-<!-- Welcome Screen -->
-<div id="screen-welcome" class="screen">
-<div class="container">
-<svg style="width:7rem;height:7rem;margin:2rem auto;display:block" viewBox="0 0 112 112"><defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0EA5E9"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs><path d="M20 56Q28 48 36 56T52 56T68 56" stroke="url(#g1)" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M24 68Q42 62 60 68Q72 72 88 68" stroke="url(#g1)" stroke-width="2.5" fill="none" stroke-dasharray="4,4"/><path d="M88 48Q96 36 104 44" stroke="url(#g1)" stroke-width="3" fill="none"/></svg>
-<h1 style="text-align:center;font-size:2rem;margin-bottom:0.75rem;font-weight:700">MindStep</h1>
-<p style="text-align:center;color:var(--text-2);margin-bottom:2.5rem;line-height:1.6;font-size:0.9375rem">Transform movement into mindwork.<br>AI-powered cognitive productivity.</p>
-<div class="card">
-<div class="form-group"><label class="form-label">Nome</label><input type="text" id="userName" placeholder="Come ti chiami?" maxlength="30"></div>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-<div class="form-group"><label class="form-label">Età</label><input type="number" id="userAge" placeholder="25" min="1" max="120"></div>
-<div class="form-group"><label class="form-label">Sesso</label><select id="userGender"><option value="">-</option><option value="M">M</option><option value="F">F</option><option value="A">Altro</option></select></div>
-</div>
-<button class="btn btn-primary" onclick="saveProfile()" style="width:100%;margin-top:1.25rem">Inizia</button>
-</div></div></div>
-
-<!-- Routines Setup -->
-<div id="screen-routines" class="screen">
-<div class="container">
-<h1 style="text-align:center;margin-bottom:0.75rem;font-weight:700;font-size:1.75rem">Le Tue Routine</h1>
-<p style="text-align:center;color:var(--text-2);margin-bottom:2rem;font-size:0.9375rem">Fino a 10 abitudini quotidiane da tracciare</p>
-<div class="card">
-<div id="routineList"></div>
-<div style="text-align:center;margin:1.25rem 0;font-weight:600;color:var(--text-2)"><span id="routineCount" style="font-size:1.5rem;color:var(--primary)">0</span> / 10</div>
-<button class="btn btn-secondary" onclick="addRoutineSetup()" id="addRoutineBtn" style="width:100%">+ Aggiungi</button>
-<button class="btn btn-primary" onclick="saveRoutines()" style="width:100%;margin-top:0.75rem">Continua</button>
-</div></div></div>
-
-<!-- Main Screen -->
-<div id="screen-main" class="screen">
-<div class="container">
-
-<!-- Quote Card -->
-<div class="card" style="background:linear-gradient(135deg,rgba(251,191,36,0.08),rgba(245,158,11,0.08));border-color:rgba(251,191,36,0.2)">
-<p id="quoteText" style="font-style:italic;color:var(--text-1);margin-bottom:0.75rem;line-height:1.7;font-size:0.9375rem"></p>
-<div id="quoteAuthor" style="font-weight:600;color:var(--text-2);text-align:right;font-size:0.8125rem"></div>
+    <button class="main-btn" onclick="toggleWalk()">INIZIA SESSIONE</button>
+    <button style="background:none; border:none; color: var(--text-secondary); margin-top:20px; text-decoration:underline;" onclick="showHistory()">Vedi Storico</button>
 </div>
 
-<!-- Routines -->
-<div class="card">
-<div class="card-header" onclick="toggleSection('routines')">
-<h3 class="card-title"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 11l3 3L22 4"/></svg>Routine <span id="routineSummary" style="color:var(--success);margin-left:0.5rem;font-size:0.875rem">0/0</span></h3>
-<div class="expand-btn" id="routinesExpand"><svg style="width:1rem;height:1rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
-</div>
-<div class="expandable expanded" id="routinesContent">
-<div class="progress-wrap">
-<div class="progress-track"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
-<div class="progress-info"><span class="progress-pct" id="progressPct">0%</span> Completato</div>
-</div>
-<div class="routine-list" id="routineChecklist"></div>
-</div>
-</div>
+<div id="app-interface">
+    <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <span style="font-weight:700; color:var(--primary);">LIVE SESSION</span>
+        <div id="status-indicator" class="pulse-dot"></div>
+    </header>
 
-<!-- Walking -->
-<div class="card">
-<h3 class="card-title" style="margin-bottom:1.25rem"><svg class="card-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg>Mindwalking</h3>
-<div class="timer-section">
-<div class="timer-ring-container">
-<svg class="timer-ring" viewBox="0 0 176 176">
-<defs><linearGradient id="timer-gradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0EA5E9"/><stop offset="100%" stop-color="#06B6D4"/></linearGradient></defs>
-<circle class="timer-track" cx="88" cy="88" r="84"/>
-<circle class="timer-progress" id="timerProgress" cx="88" cy="88" r="84" stroke-dasharray="528" stroke-dashoffset="528"/>
-</svg>
-<div class="timer-center">
-<div class="timer-value" id="timerDisplay">00:00:00</div>
-<div class="timer-label">tempo</div>
-</div>
-</div>
-<div class="stats-row">
-<div class="stat-box"><div class="stat-num" id="distanceDisplay">0.0</div><div class="stat-lbl">km</div></div>
-<div class="stat-box"><div class="stat-num" id="speedDisplay">0.0</div><div class="stat-lbl">km/h</div></div>
-<div class="stat-box"><div class="stat-num" id="caloriesDisplay">0</div><div class="stat-lbl">kcal</div></div>
-</div>
-<button class="btn btn-primary" onclick="toggleWalk()" id="walkBtn" style="width:100%">
-<svg id="walkBtnIcon" style="width:1.125rem;height:1.125rem" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
-<span id="walkBtnText">Inizia</span>
-</button>
-</div>
+    <div class="metrics-container">
+        <div class="metric-card">
+            <div class="metric-val" id="timer-display">00:00</div>
+            <div class="metric-label">Durata</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-val" id="distance-display">0.00</div>
+            <div class="metric-label">Km</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-val" id="steps-display">0</div>
+            <div class="metric-label">Passi Reali</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-val" id="notes-display">0</div>
+            <div class="metric-label">Idee</div>
+        </div>
+    </div>
+
+    <button id="action-btn" class="main-btn" onclick="toggleWalk()">PAUSA</button>
+    <button style="background:transparent; color: var(--text-secondary); border:1px solid var(--border); padding:10px 20px; border-radius:30px; margin: 10px auto; display:block;" onclick="stopWalk()">TERMINA</button>
+
+    <div style="margin-top:20px; text-align:center;">
+        <button onclick="toggleRecording()" style="background:rgba(255,255,255,0.1); border:none; width:60px; height:60px; border-radius:50%; color:white;">
+            🎤
+        </button>
+        <p style="font-size:0.8rem; margin-top:10px;">Registra pensiero</p>
+    </div>
 </div>
 
-<!-- Brainstorm -->
-<div class="card">
-<div class="card-header" onclick="toggleSection('brainstorm')">
-<h3 class="card-title"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>Pre-Storm</h3>
-<div class="expand-btn" id="brainstormExpand"><svg style="width:1rem;height:1rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
-</div>
-<div class="expandable" id="brainstormContent">
-<div id="recordingBadge" class="hidden" style="display:flex;align-items:center;justify-content:center;gap:0.625rem;padding:0.75rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius-md);color:var(--danger);margin-bottom:0.75rem;font-weight:600;font-size:0.875rem"><span style="width:0.5rem;height:0.5rem;background:var(--danger);border-radius:50%;animation:pulse 1.5s infinite"></span>Registrazione in corso</div>
-<div class="btn-group">
-<button class="btn btn-secondary" onclick="toggleRecording()" id="recordBtn"><span id="recordBtnText">🎙️ Registra</span></button>
-<button class="btn btn-outline" onclick="showExportModal()">📤 Esporta</button>
-</div>
-<textarea id="brainstormNotes" placeholder="I tuoi pensieri durante la camminata..." onchange="saveBrainstorm()" style="margin-top:0.75rem"></textarea>
-</div>
+<div id="history-view">
+    <h2>Performance Elite</h2>
+    
+    <div style="display:flex; gap:10px; margin-bottom:20px;">
+        <button onclick="document.getElementById('history-list').style.display='block'; document.getElementById('badges-grid').style.display='none';" style="flex:1; padding:10px; background:var(--navy-medium); color:white; border:none; border-radius:8px;">Storico</button>
+        <button onclick="document.getElementById('history-list').style.display='none'; document.getElementById('badges-grid').style.display='grid';" style="flex:1; padding:10px; background:var(--navy-medium); color:white; border:none; border-radius:8px;">Traguardi</button>
+    </div>
+
+    <div id="history-list"></div>
+    <div id="badges-grid" class="badge-grid" style="display:none;"></div>
+    
+    <button onclick="location.reload()" style="margin-top:auto; padding:15px; background:none; border:none; color:var(--text-secondary);">← Torna alla Home</button>
 </div>
 
-<!-- Music -->
-<div class="card">
-<div class="card-header" onclick="toggleSection('music')">
-<h3 class="card-title"><svg class="card-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/></svg>Musica</h3>
-<div class="expand-btn" id="musicExpand"><svg style="width:1rem;height:1rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
-</div>
-<div class="expandable" id="musicContent">
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;margin-bottom:1rem">
-<a href="https://open.spotify.com" target="_blank" class="ai-card" style="padding:0.875rem"><span style="font-size:2rem">🎵</span><span style="font-size:0.75rem;font-weight:600">Spotify</span></a>
-<a href="https://music.youtube.com" target="_blank" class="ai-card" style="padding:0.875rem"><span style="font-size:2rem">▶️</span><span style="font-size:0.75rem;font-weight:600">YouTube</span></a>
-<a href="https://music.apple.com" target="_blank" class="ai-card" style="padding:0.875rem"><span style="font-size:2rem">🎧</span><span style="font-size:0.75rem;font-weight:600">Apple</span></a>
-</div>
-<div class="form-group"><label class="form-label">Link Personalizzato</label><input type="url" id="customMusic" placeholder="URL playlist..."><button class="btn btn-secondary" onclick="openCustomMusic()" style="width:100%;margin-top:0.75rem">Apri</button></div>
-</div>
+<div id="introspection-popup">
+    <div class="pulse-dot"></div>
+    <span id="popup-text" style="font-size:0.9rem; line-height:1.4;"></span>
 </div>
 
-</div>
-</div>
-
-<!-- History Screen -->
-<div id="screen-history" class="screen"><div class="container">
-<h2 style="margin-bottom:1.25rem;font-weight:600;font-size:1.5rem">Storico Attività</h2>
-<div class="card"><div id="historyView"></div></div>
-</div></div>
-
-<!-- Data Screen -->
-<div id="screen-data" class="screen"><div class="container">
-<h2 style="margin-bottom:1.25rem;font-weight:600;font-size:1.5rem">Dati Settimanali</h2>
-<div class="card">
-<div class="week-grid" id="weekGrid"></div>
-<div class="stats-row" style="margin-top:1.25rem">
-<div class="stat-box"><div class="stat-num" id="activeDays">0/7</div><div class="stat-lbl">Giorni</div></div>
-<div class="stat-box"><div class="stat-num" id="totalKm">0</div><div class="stat-lbl">KM</div></div>
-<div class="stat-box"><div class="stat-num" id="completedRoutines">0%</div><div class="stat-lbl">Routine</div></div>
-</div></div>
-</div></div>
-
-<!-- Goals Screen -->
-<div id="screen-goals" class="screen"><div class="container">
-<h2 style="margin-bottom:1.25rem;font-weight:600;font-size:1.5rem">Obiettivi Mindwalking</h2>
-<div class="card"><div class="badges-grid" id="badgesGrid"></div></div>
-</div></div>
-
-<!-- More Screen -->
-<div id="screen-more" class="screen"><div class="container">
-<h2 style="margin-bottom:1.25rem;font-weight:600;font-size:1.5rem">Impostazioni</h2>
-<div class="card">
-<div class="form-group"><label class="form-label">Tema Interfaccia</label>
-<div class="theme-picker">
-<div class="theme-opt" onclick="setTheme('light')" id="themeLight">Chiaro</div>
-<div class="theme-opt active" onclick="setTheme('auto')" id="themeAuto">Auto</div>
-<div class="theme-opt" onclick="setTheme('dark')" id="themeDark">Scuro</div>
-</div></div>
-<div class="settings-list" style="margin-top:1.25rem">
-<div class="setting-item" onclick="editProfile()"><div class="setting-left"><svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="7" r="4"/></svg><span class="setting-text">Profilo</span></div></div>
-<div class="setting-item" onclick="editRoutines()"><div class="setting-left"><svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/></svg><span class="setting-text">Routine</span></div></div>
-<div class="setting-item" onclick="exportAllData()"><div class="setting-left"><svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5"/></svg><span class="setting-text">Esporta</span></div></div>
-<div class="setting-item" onclick="resetApp()" style="color:var(--danger)"><div class="setting-left"><svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/></svg><span class="setting-text">Reset</span></div></div>
-</div></div>
-</div></div>
-
-<!-- Export Modal -->
-<div id="exportModal" class="modal">
-<div class="modal-box">
-<div class="modal-head"><h3 class="modal-title">Esporta Note</h3><button class="modal-close" onclick="closeExportModal()"><svg style="width:1.125rem;height:1.125rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-<button class="btn btn-primary" onclick="exportAsText()" style="width:100%;margin-bottom:1rem">📝 Salva come .txt</button>
-<h4 style="margin:1.25rem 0 0.75rem;font-size:0.9375rem;font-weight:600">Invia ad AI:</h4>
-<div class="ai-grid">
-<a href="#" onclick="sendToAI('claude')" class="ai-card"><div class="ai-logo" style="background:linear-gradient(135deg,#D97757,#c56647)">🤖</div><div class="ai-name">Claude</div></a>
-<a href="#" onclick="sendToAI('chatgpt')" class="ai-card"><div class="ai-logo" style="background:linear-gradient(135deg,#10a37f,#0d8b6a)">✨</div><div class="ai-name">ChatGPT</div></a>
-<a href="#" onclick="sendToAI('gemini')" class="ai-card"><div class="ai-logo" style="background:linear-gradient(135deg,#4285f4,#3367d6)">💎</div><div class="ai-name">Gemini</div></a>
-<a href="#" onclick="sendToAI('copilot')" class="ai-card"><div class="ai-logo" style="background:linear-gradient(135deg,#0078d4,#005a9e)">🚀</div><div class="ai-name">Copilot</div></a>
-</div>
-</div></div>
-
-<!-- Badge Modal -->
-<div id="badgeModal" class="modal">
-<div class="modal-box">
-<div class="modal-head"><h3 class="modal-title">Obiettivo</h3><button class="modal-close" onclick="closeBadgeModal()"><svg style="width:1.125rem;height:1.125rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-<div style="text-align:center">
-<div id="badgeModalIcon" style="font-size:5rem;margin:1.25rem 0"></div>
-<h2 id="badgeModalTitle" style="font-size:1.5rem;font-weight:700;margin-bottom:0.75rem"></h2>
-<p id="badgeModalDesc" style="color:var(--text-2);line-height:1.6"></p>
-</div></div></div>
-
-<!-- Day Detail Modal -->
-<div id="dayModal" class="modal">
-<div class="modal-box">
-<div class="modal-head"><h3 id="dayModalTitle" class="modal-title">Dettagli</h3><button class="modal-close" onclick="closeDayModal()"><svg style="width:1.125rem;height:1.125rem" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
-<div id="dayModalContent"></div>
-</div></div>
-
-<script>
-/* MindStep v5.2 - Mindwalking Intelligence */
-const APP_VERSION='5.2',WEATHER_API_KEY='';
-let currentDate=new Date(),routines=[],walkData={isActive:!1,isPaused:!1,startTime:null,elapsedTime:0,pausedTime:0,distance:0,lastPosition:null,positions:[],watchId:null},timerInterval=null,recognition=null,isRecording=!1,transcriptText='',walkingDetected=!1,prestormDismissed=!1;
-
-// Mindwalking Badges (NOT fitness)
-const BADGES=[
-{id:'first_insight',name:'Prima Scintilla',icon:'💡',svg:'lightbulb',req:1,type:'brainstorm',desc:'Hai catturato il tuo primo pensiero in movimento'},
-{id:'thought_chain',name:'Catena di Pensiero',icon:'🔗',svg:'link',req:3,type:'brainstorm_consecutive',desc:'3 giorni consecutivi di riflessione'},
-{id:'deep_walk',name:'Camminata Profonda',icon:'🌊',svg:'waves',req:20,type:'brainstorm_duration',desc:'Riflessione ininterrotta 20+ minuti'},
-{id:'idea_harvest',name:'Raccolto di Idee',icon:'🌾',svg:'sparkles',req:10,type:'brainstorm_count',desc:'10 sessioni di pensiero registrate'},
-{id:'mind_runner',name:'Mind Runner',icon:'⚡',svg:'zap',req:7,type:'weekly_mindwalking',desc:'7 giorni di mindwalking consecutivo'},
-{id:'ai_synthesizer',name:'Sintetizzatore',icon:'🤖',svg:'cpu',req:5,type:'ai_export',desc:'Hai organizzato 5 sessioni con AI'}
-];
-
-const QUOTES=[
-{text:"Walking is the best possible exercise. Habituate yourself to walk very far.",author:"Thomas Jefferson"},
-{text:"All truly great thoughts are conceived while walking.",author:"Friedrich Nietzsche"},
-{text:"Methinks that the moment my legs begin to move, my thoughts begin to flow.",author:"Henry David Thoreau"},
-{text:"Walking: the most ancient exercise and still the best modern exercise.",author:"Carrie Latet"},
-{text:"An early-morning walk is a blessing for the whole day.",author:"Henry David Thoreau"}
-];
-
-// INIT
-function init(){
-checkVersion();
-const u=localStorage.getItem('mindstep_user');
-u?(routines=JSON.parse(localStorage.getItem('mindstep_routines')||'[]'),showScreen('screen-main'),loadMainScreen()):showScreen('screen-welcome');
-requestPermissions();
-loadWeather();
-registerSW();
-initMotionDetection();
-}
-
-function checkVersion(){localStorage.setItem('mindstep_version',APP_VERSION)}
-function registerSW(){'serviceWorker'in navigator&&navigator.serviceWorker.register('./service-worker.js').catch(e=>console.warn('SW:',e))}
-function requestPermissions(){'Notification'in window&&Notification.permission==='default'&&Notification.requestPermission()}
-
-// SCREENS
-function showScreen(id){
-document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-}
-
-function switchTab(tab){
-const map={home:'screen-main',history:'screen-history',data:'screen-data',goals:'screen-goals',more:'screen-more'};
-showScreen(map[tab]);
-document.getElementById('nav'+tab.charAt(0).toUpperCase()+tab.slice(1))?.classList.add('active');
-}
-
-// PROFILE
-function saveProfile(){
-const n=document.getElementById('userName').value.trim();
-if(!n){alert('Inserisci il tuo nome');return}
-localStorage.setItem('mindstep_user',JSON.stringify({
-name:n,
-age:document.getElementById('userAge').value,
-gender:document.getElementById('userGender').value,
-createdAt:new Date().toISOString()
-}));
-showScreen('screen-routines');
-setTimeout(()=>addRoutineSetup(),100);
-}
-
-// ROUTINES SETUP
-function addRoutineSetup(){
-if(routines.length>=10){alert('Massimo 10 routine');return}
-const item=document.createElement('div');
-item.style.cssText='display:flex;gap:0.75rem;margin-bottom:0.75rem;align-items:center';
-item.innerHTML=`<input type="text" placeholder="Es: Meditazione..." data-idx="${routines.length}" style="flex:1;padding:0.75rem;border:1px solid var(--border-1);border-radius:var(--radius-md);font:inherit;background:var(--bg-1);color:var(--text-1)"><button onclick="this.parentElement.remove();routines.splice(${routines.length},1);updateRoutineCount()" style="width:2rem;height:2rem;border-radius:var(--radius-md);border:none;background:var(--danger);color:#fff;cursor:pointer;font-size:1.125rem;font-weight:600">×</button>`;
-document.getElementById('routineList').appendChild(item);
-routines.push('');
-updateRoutineCount();
-}
-
-function updateRoutineCount(){
-document.getElementById('routineCount').textContent=routines.length;
-}
-
-function saveRoutines(){
-routines=Array.from(document.querySelectorAll('#routineList input')).map(i=>i.value.trim()).filter(v=>v);
-if(!routines.length){alert('Aggiungi almeno una routine');return}
-localStorage.setItem('mindstep_routines',JSON.stringify(routines));
-showScreen('screen-main');
-loadMainScreen();
-}
-
-// MAIN SCREEN
-function loadMainScreen(){
-const u=JSON.parse(localStorage.getItem('mindstep_user'));
-document.getElementById('appName').textContent=`Ciao, ${u.name}`;
-updateQuote();
-loadRoutineChecklist();
-updateStreak();
-updateWeeklyAnalytics();
-updateBadges();
-loadQuotable();
-loadDayData();
-}
-
-async function loadQuotable(){
-try{
-const r=await fetch('https://api.quotable.io/random?tags=inspirational|motivational');
-if(r.ok){
-const d=await r.json();
-document.getElementById('quoteText').textContent=`"${d.content}"`;
-document.getElementById('quoteAuthor').textContent='— '+d.author;
-}
-}catch(e){updateQuote()}
-}
-
-function updateQuote(){
-const q=QUOTES[Math.floor(Math.random()*QUOTES.length)];
-document.getElementById('quoteText').textContent=`"${q.text}"`;
-document.getElementById('quoteAuthor').textContent='— '+q.author;
-}
-
-async function loadWeather(){
-if(!navigator.geolocation)return;
-try{
-const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:5000}));
-const{latitude:lat,longitude:lon}=pos.coords;
-const url=WEATHER_API_KEY?
-`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${WEATHER_API_KEY}&units=metric&lang=it`:
-null;
-if(!url)return;
-const r=await fetch(url);
-if(!r.ok)return;
-const d=await r.json();
-const icons={'Clear':'☀️','Clouds':'☁️','Rain':'🌧️','Snow':'❄️','Drizzle':'🌦️','Thunderstorm':'⛈️'};
-document.getElementById('weatherIcon').textContent=icons[d.weather[0].main]||'⛅';
-document.getElementById('weatherTemp').textContent=Math.round(d.main.temp)+'°';
-}catch(e){console.warn('Weather:',e)}
-}
-
-// ROUTINES
-function loadRoutineChecklist(){
-const list=document.getElementById('routineChecklist');
-list.innerHTML='';
-if(!routines.length){
-list.innerHTML='<div class="empty-state" style="padding:2rem 1rem"><p style="font-size:0.875rem;color:var(--text-3)">Vai in Altro → Routine per configurare</p></div>';
-return;
-}
-const key=currentDate.toISOString().split('T')[0];
-const data=getDayData(key);
-routines.forEach((r,i)=>{
-const item=document.createElement('div');
-item.className='routine-item'+(data.routines?.[i]?' completed':'');
-item.innerHTML=`<input type="checkbox" class="routine-check" id="r${i}" ${data.routines?.[i]?'checked':''} onchange="saveRoutine(${i})"><label class="routine-text" for="r${i}">${r}</label>`;
-list.appendChild(item);
-});
-updateProgress();
-}
-
-function saveRoutine(i){
-const key=currentDate.toISOString().split('T')[0];
-const cb=document.getElementById(`r${i}`);
-let d=getDayData(key);
-d.routines=d.routines||{};
-d.routines[i]=cb.checked;
-saveDayData(key,d);
-cb.parentElement.classList.toggle('completed',cb.checked);
-updateProgress();
-updateWeeklyAnalytics();
-checkMilestones();
-}
-
-function updateProgress(){
-const cbs=document.querySelectorAll('.routine-check');
-const total=cbs.length;
-const done=Array.from(cbs).filter(c=>c.checked).length;
-const pct=total>0?Math.round((done/total)*100):0;
-document.getElementById('routineSummary').textContent=`${done}/${total}`;
-document.getElementById('progressBar').style.width=pct+'%';
-document.getElementById('progressPct').textContent=pct+'%';
-}
-
-// WALK - BUG FIX #001: GPS tracking fixed
-function toggleWalk(){
-walkData.isActive?(walkData.isPaused?resumeWalk():pauseWalk()):startWalk();
-}
-
-function startWalk(){
-walkData.isActive=!0;
-walkData.isPaused=!1;
-walkData.startTime=Date.now();
-walkData.elapsedTime=0;
-walkData.positions=[];
-walkData.distance=0;
-walkData.lastPosition=null;
-updateWalkBtn();
-timerInterval=setInterval(updateTimer,1000);
-
-// FIX: Start GPS tracking
-if(navigator.geolocation){
-navigator.geolocation.getCurrentPosition(pos=>{
-walkData.lastPosition={lat:pos.coords.latitude,lng:pos.coords.longitude};
-walkData.watchId=navigator.geolocation.watchPosition(updatePosition,console.warn,{
-enableHighAccuracy:!0,
-timeout:10000,
-maximumAge:1000
-});
-});
-}
-}
-
-function pauseWalk(){
-walkData.isPaused=!0;
-walkData.pausedTime=Date.now();
-clearInterval(timerInterval);
-
-// FIX BUG-001: Stop GPS during pause
-if(walkData.watchId){
-navigator.geolocation.clearWatch(walkData.watchId);
-walkData.watchId=null;
-}
-
-updateWalkBtn();
-}
-
-function resumeWalk(){
-walkData.isPaused=!1;
-walkData.startTime+=Date.now()-walkData.pausedTime;
-updateWalkBtn();
-timerInterval=setInterval(updateTimer,1000);
-
-// FIX BUG-001: Restart GPS from current position
-if(navigator.geolocation){
-navigator.geolocation.getCurrentPosition(pos=>{
-walkData.lastPosition={lat:pos.coords.latitude,lng:pos.coords.longitude};
-walkData.watchId=navigator.geolocation.watchPosition(updatePosition,console.warn,{
-enableHighAccuracy:!0,
-timeout:10000,
-maximumAge:1000
-});
-});
-}
-}
-
-function stopWalk(){
-walkData.isActive=!1;
-walkData.isPaused=!1;
-clearInterval(timerInterval);
-if(walkData.watchId){
-navigator.geolocation.clearWatch(walkData.watchId);
-walkData.watchId=null;
-}
-
-// Save walk data
-const key=currentDate.toISOString().split('T')[0];
-let d=getDayData(key);
-d.walk={
-duration:walkData.elapsedTime,
-distance:walkData.distance,
-timestamp:new Date().toISOString()
-};
-saveDayData(key,d);
-
-// Reset
-walkData.startTime=null;
-walkData.elapsedTime=0;
-walkData.distance=0;
-walkData.positions=[];
-walkData.lastPosition=null;
-
-updateWalkBtn();
-updateWeeklyAnalytics();
-checkMilestones();
-}
-
-function updateWalkBtn(){
-const btn=document.getElementById('walkBtn');
-const icon=document.getElementById('walkBtnIcon');
-const text=document.getElementById('walkBtnText');
-
-if(!walkData.isActive){
-btn.className='btn btn-primary';
-btn.style.background='';
-icon.innerHTML='<path d="M5 3l14 9-14 9V3z"/>';
-text.textContent='Inizia';
-}else if(walkData.isPaused){
-btn.className='btn btn-primary';
-btn.style.background='';
-icon.innerHTML='<path d="M5 3l14 9-14 9V3z"/>';
-text.textContent='Riprendi';
-}else{
-btn.className='btn';
-btn.style.background='var(--danger)';
-btn.style.color='#fff';
-icon.innerHTML='<rect x="6" y="6" width="4" height="12"/><rect x="14" y="6" width="4" height="12"/>';
-text.textContent='Pausa';
-}
-}
-
-function updateTimer(){
-walkData.elapsedTime=Date.now()-walkData.startTime;
-const t=Math.floor(walkData.elapsedTime/1000);
-const h=Math.floor(t/3600);
-const m=Math.floor((t%3600)/60);
-const s=t%60;
-document.getElementById('timerDisplay').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-
-// Update progress ring
-const prog=document.getElementById('timerProgress');
-const circ=528;
-const mins=walkData.elapsedTime/60000;
-const offset=circ-(circ*(Math.min(mins/60,1)));
-prog.style.strokeDashoffset=offset;
-
-// Update speed
-if(walkData.distance>0&&walkData.elapsedTime>0){
-const hrs=walkData.elapsedTime/3600000;
-document.getElementById('speedDisplay').textContent=(walkData.distance/hrs).toFixed(1);
-}
-
-// Update calories
-document.getElementById('caloriesDisplay').textContent=Math.round(walkData.distance*65);
-
-// Check Pre-Storm trigger
-if(mins>=3&&!prestormDismissed&&!isRecording){
-triggerPreStorm();
-}
-}
-
-function updatePosition(pos){
-const newPos={lat:pos.coords.latitude,lng:pos.coords.longitude};
-
-if(walkData.lastPosition){
-const dist=calcDistance(
-walkData.lastPosition.lat,
-walkData.lastPosition.lng,
-newPos.lat,
-newPos.lng
-);
-
-// Only count meaningful movement (>5m)
-if(dist>0.005){
-walkData.distance+=dist;
-document.getElementById('distanceDisplay').textContent=walkData.distance.toFixed(2);
-walkData.lastPosition=newPos;
-}
-}else{
-walkData.lastPosition=newPos;
-}
-
-walkData.positions.push(newPos);
-}
-
-function calcDistance(lat1,lon1,lat2,lon2){
-const R=6371;
-const dLat=(lat2-lat1)*Math.PI/180;
-const dLon=(lon2-lon1)*Math.PI/180;
-const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
-}
-
-// PRE-STORM - Motion Detection MVP
-function initMotionDetection(){
-// PWA limitation: simulate with timer check
-setInterval(checkWalkingState,30000); // every 30s
-}
-
-function checkWalkingState(){
-if(walkData.isActive&&!walkData.isPaused&&walkData.elapsedTime>=180000&&!isRecording){
-walkingDetected=!0;
-}
-}
-
-function triggerPreStorm(){
-if(prestormDismissed)return;
-document.getElementById('prestormBanner').classList.remove('hidden');
-setTimeout(()=>{
-if(!prestormDismissed){
-document.getElementById('prestormBanner').classList.add('hidden');
-}
-},15000);
-}
-
-function activatePreStorm(){
-prestormDismissed=!0;
-document.getElementById('prestormBanner').classList.add('hidden');
-
-// Switch to walking mode
-document.body.classList.add('walking-mode');
-
-// Open brainstorm section
-const brainstorm=document.getElementById('brainstormContent');
-if(!brainstorm.classList.contains('expanded')){
-toggleSection('brainstorm');
-}
-
-// Auto-start recording
-setTimeout(()=>startRecording(),500);
-
-// Scroll to brainstorm
-document.getElementById('brainstormContent').scrollIntoView({behavior:'smooth',block:'center'});
-
-showNotification('🧠 Modalità creativa attivata','Pre-Storm');
-}
-
-function dismissPreStorm(){
-prestormDismissed=!0;
-document.getElementById('prestormBanner').classList.add('hidden');
-}
-
-// RECORDING - BUG FIX: no overwrite
-function toggleRecording(){
-isRecording?stopRecording():startRecording();
-}
-
-function startRecording(){
-if(!('webkitSpeechRecognition'in window)){
-alert('Trascrizione vocale non supportata su questo browser. Usa Chrome o Edge.');
-return;
-}
-
-recognition=new webkitSpeechRecognition();
-recognition.continuous=!0;
-recognition.interimResults=!0;
-recognition.lang='it-IT';
-
-recognition.onstart=()=>{
-isRecording=!0;
-document.getElementById('recordBtn').style.background='var(--danger)';
-document.getElementById('recordBtn').style.color='#fff';
-document.getElementById('recordBtnText').textContent='⏹️ Stop';
-document.getElementById('recordingBadge').classList.remove('hidden');
-// FIX: Don't reset transcriptText on resume
-if(!transcriptText)transcriptText='';
-};
-
-recognition.onresult=e=>{
-let interim='';
-for(let i=e.resultIndex;i<e.results.length;i++){
-if(e.results[i].isFinal){
-transcriptText+=e.results[i][0].transcript+' ';
-}else{
-interim+=e.results[i][0].transcript;
-}
-}
-document.getElementById('brainstormNotes').value=transcriptText+interim;
-};
-
-recognition.onerror=()=>stopRecording();
-recognition.start();
-}
-
-function stopRecording(){
-if(recognition){
-recognition.stop();
-recognition=null;
-}
-isRecording=!1;
-document.getElementById('recordBtn').style.background='';
-document.getElementById('recordBtn').style.color='';
-document.getElementById('recordBtnText').textContent='🎙️ Registra';
-document.getElementById('recordingBadge').classList.add('hidden');
-saveBrainstorm();
-}
-
-function saveBrainstorm(){
-const notes=document.getElementById('brainstormNotes').value;
-const key=currentDate.toISOString().split('T')[0];
-let d=getDayData(key);
-const hadBrainstorm=!!d.brainstorm;
-d.brainstorm=notes;
-d.brainstormTimestamp=new Date().toISOString();
-saveDayData(key,d);
-
-if(notes&&!hadBrainstorm){
-checkMilestones();
-}
-}
-
-// EXPORT
-function showExportModal(){
-document.getElementById('exportModal').classList.add('active');
-}
-
-function closeExportModal(){
-document.getElementById('exportModal').classList.remove('active');
-}
-
-function exportAsText(){
-const notes=document.getElementById('brainstormNotes').value;
-if(!notes){alert('Nessuna nota da esportare');return}
-try{
-const blob=new Blob([notes],{type:'text/plain'});
-const url=URL.createObjectURL(blob);
-const a=document.createElement('a');
-a.href=url;
-a.download=`mindstep_${currentDate.toISOString().split('T')[0]}.txt`;
-a.click();
-URL.revokeObjectURL(url);
-closeExportModal();
-showNotification('📝 Note esportate','Export');
-}catch(e){alert('Errore export')}
-}
-
-function sendToAI(ai){
-const notes=document.getElementById('brainstormNotes').value;
-if(!notes){alert('Nessuna nota da inviare');return}
-
-const date=currentDate.toLocaleDateString('it-IT');
-const prompt=`Data: ${date}%0A%0AMindwalking Session:%0A"${notes}"%0A%0AAiutami a:%0A1. Identificare i temi principali%0A2. Estrarre action items concreti%0A3. Organizzare le idee per priorità%0A4. Suggerire prossimi passi%0A%0ARispondi in modo strutturato e pratico.`;
-
-const urls={
-claude:'https://claude.ai/new?q='+prompt,
-chatgpt:'https://chat.openai.com/?q='+prompt,
-gemini:'https://gemini.google.com/?q='+prompt,
-copilot:'https://copilot.microsoft.com/?q='+prompt
-};
-
-window.open(urls[ai],'_blank');
-closeExportModal();
-
-// Track AI export
-const key=currentDate.toISOString().split('T')[0];
-let d=getDayData(key);
-d.aiExports=d.aiExports||[];
-d.aiExports.push({ai,timestamp:new Date().toISOString()});
-saveDayData(key,d);
-
-checkMilestones();
-showNotification(`🤖 Inviato a ${ai.charAt(0).toUpperCase()+ai.slice(1)}`,'AI');
-}
-
-// MUSIC
-function openCustomMusic(){
-const url=document.getElementById('customMusic').value.trim();
-if(!url){alert('Inserisci un URL');return}
-window.open(url,'_blank');
-}
-
-// TOGGLE SECTIONS
-function toggleSection(sec){
-const content=document.getElementById(sec+'Content');
-const expand=document.getElementById(sec+'Expand');
-content.classList.toggle('expanded');
-expand.classList.toggle('rotated');
-}
-
-// STREAK
-function updateStreak(){
-document.getElementById('streakCount').textContent=calculateStreak();
-}
-
-function calculateStreak(){
-let s=0;
-const today=new Date();
-today.setHours(0,0,0,0);
-for(let i=0;i<365;i++){
-const d=new Date(today);
-d.setDate(today.getDate()-i);
-const k=d.toISOString().split('T')[0];
-const data=getDayData(k);
-if((data.routines&&Object.values(data.routines).some(v=>v))||data.walk||data.brainstorm){
-s++;
-}else break;
-}
-return s;
-}
-
-// WEEKLY ANALYTICS - BUG FIX #005: Correct percentage
-function updateWeeklyAnalytics(){
-const grid=document.getElementById('weekGrid');
-if(!grid)return;
-grid.innerHTML='';
-
-const days=['D','L','M','M','G','V','S'];
-const start=new Date(currentDate);
-start.setDate(currentDate.getDate()-currentDate.getDay());
-
-let active=0;
-let km=0;
-let totalR=0;
-let doneR=0;
-
-for(let i=0;i<7;i++){
-const d=new Date(start);
-d.setDate(start.getDate()+i);
-const k=d.toISOString().split('T')[0];
-const data=getDayData(k);
-
-const hasAct=(data.routines&&Object.values(data.routines).some(v=>v))||data.walk||data.brainstorm;
-if(hasAct)active++;
-
-if(data.walk)km+=data.walk.distance||0;
-
-// FIX BUG-005: Correct routine calculation
-if(data.routines&&routines.length>0){
-routines.forEach((routineName,idx)=>{
-if(data.routines.hasOwnProperty(idx)){
-totalR++;
-if(data.routines[idx]===!0)doneR++;
-}
-});
-}
-
-const cell=document.createElement('div');
-cell.className='day-box'+(hasAct?' active':'');
-cell.innerHTML=`<div class="day-name">${days[i]}</div><div style="font-size:1.125rem">${hasAct?'✓':'—'}</div>`;
-cell.onclick=()=>showDayDetail(d);
-grid.appendChild(cell);
-}
-
-document.getElementById('activeDays').textContent=`${active}/7`;
-document.getElementById('totalKm').textContent=km.toFixed(1);
-const rPct=totalR>0?Math.round((doneR/totalR)*100):0;
-document.getElementById('completedRoutines').textContent=rPct+'%';
-}
-
-// DAY DETAIL - BUG FIX #004: Clickable
-function showDayDetail(date){
-const key=date.toISOString().split('T')[0];
-const data=getDayData(key);
-const title=date.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
-
-document.getElementById('dayModalTitle').textContent=title;
-
-let html='';
-
-if(data.routines&&routines.length){
-const rl=routines.map((r,i)=>`
-<div style="display:flex;gap:0.625rem;margin-bottom:0.5rem;align-items:center">
-<span style="width:1.125rem">${data.routines[i]?'✅':'⬜'}</span>
-<span style="font-size:0.9375rem">${r}</span>
-</div>
-`).join('');
-html+=`<h4 style="margin-bottom:0.75rem;font-size:1rem;font-weight:600">Routine</h4>${rl}`;
-}
-
-if(data.walk){
-html+=`<h4 style="margin:1.25rem 0 0.75rem;font-size:1rem;font-weight:600">Camminata</h4>
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
-<div style="text-align:center;padding:1rem;background:var(--bg-2);border-radius:var(--radius-md);border:1px solid var(--border-2)">
-<div style="font-size:1.5rem;font-weight:600;color:var(--primary)">${(data.walk.distance||0).toFixed(2)}</div>
-<div style="font-size:0.75rem;color:var(--text-3)">km</div>
-</div>
-<div style="text-align:center;padding:1rem;background:var(--bg-2);border-radius:var(--radius-md);border:1px solid var(--border-2)">
-<div style="font-size:1.5rem;font-weight:600;color:var(--primary)">${formatTime(data.walk.duration||0)}</div>
-<div style="font-size:0.75rem;color:var(--text-3)">tempo</div>
-</div>
-</div>`;
-}
-
-if(data.brainstorm){
-html+=`<h4 style="margin:1.25rem 0 0.75rem;font-size:1rem;font-weight:600">Note</h4>
-<div style="padding:1rem;background:var(--bg-2);border-radius:var(--radius-md);font-size:0.9375rem;line-height:1.6;border:1px solid var(--border-2)">${data.brainstorm}</div>`;
-}
-
-if(!html){
-html='<div class="empty-state"><p style="font-size:0.875rem">Nessuna attività registrata</p></div>';
-}
-
-document.getElementById('dayModalContent').innerHTML=html;
-document.getElementById('dayModal').classList.add('active');
-}
-
-function closeDayModal(){
-document.getElementById('dayModal').classList.remove('active');
-}
-
-function formatTime(ms){
-const t=Math.floor(ms/1000);
-const h=Math.floor(t/3600);
-const m=Math.floor((t%3600)/60);
-const s=t%60;
-return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-}
-
-// BADGES - Mindwalking
-function updateBadges(){
-const grid=document.getElementById('badgesGrid');
-if(!grid)return;
-grid.innerHTML='';
-
-const unlocked=JSON.parse(localStorage.getItem('mindstep_badges')||'[]');
-
-BADGES.forEach(b=>{
-const isU=unlocked.includes(b.id);
-const badge=document.createElement('div');
-badge.className='badge'+(isU?' unlocked':'');
-badge.innerHTML=`
-<div class="badge-icon-wrap">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-${getBadgeSVG(b.svg)}
-</svg>
-</div>
-<div class="badge-name">${b.name}</div>
-`;
-badge.onclick=()=>showBadgeModal(b,isU);
-grid.appendChild(badge);
-});
-}
-
-function getBadgeSVG(type){
-const svgs={
-lightbulb:'<path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/>',
-link:'<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>',
-waves:'<path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>',
-sparkles:'<path d="M12 3v18M3 12h18M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
-zap:'<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',
-cpu:'<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/>'
-};
-return svgs[type]||svgs.lightbulb;
-}
-
-function showBadgeModal(b,unlocked){
-document.getElementById('badgeModalIcon').textContent=b.icon;
-document.getElementById('badgeModalTitle').textContent=b.name;
-document.getElementById('badgeModalDesc').textContent=(unlocked?'✅ ':' 🔒 ')+b.desc;
-document.getElementById('badgeModal').classList.add('active');
-}
-
-function closeBadgeModal(){
-document.getElementById('badgeModal').classList.remove('active');
-}
-
-// MILESTONES
-function checkMilestones(){
-const unlocked=JSON.parse(localStorage.getItem('mindstep_badges')||'[]');
-const newBadges=[];
-
-BADGES.forEach(b=>{
-if(unlocked.includes(b.id))return;
-
-let unlock=!1;
-
-if(b.type==='brainstorm'&&countBrainstorms()>=b.req)unlock=!0;
-if(b.type==='brainstorm_consecutive'&&getBrainstormStreak()>=b.req)unlock=!0;
-if(b.type==='brainstorm_duration'&&getLongestBrainstorm()>=b.req)unlock=!0;
-if(b.type==='brainstorm_count'&&countBrainstorms()>=b.req)unlock=!0;
-if(b.type==='weekly_mindwalking'&&calculateStreak()>=b.req)unlock=!0;
-if(b.type==='ai_export'&&countAIExports()>=b.req)unlock=!0;
-
-if(unlock){
-unlocked.push(b.id);
-newBadges.push(b);
-}
-});
-
-if(newBadges.length){
-localStorage.setItem('mindstep_badges',JSON.stringify(unlocked));
-updateBadges();
-newBadges.forEach(b=>showNotification(`${b.icon} ${b.name} sbloccato!`,'Obiettivo'));
-}
-}
-
-function countBrainstorms(){
-let c=0;
-Object.keys(localStorage).forEach(k=>{
-if(k.startsWith('mindstep_day_')){
-const d=JSON.parse(localStorage[k]);
-if(d.brainstorm)c++;
-}
-});
-return c;
-}
-
-function getBrainstormStreak(){
-let s=0;
-const today=new Date();
-today.setHours(0,0,0,0);
-for(let i=0;i<365;i++){
-const d=new Date(today);
-d.setDate(today.getDate()-i);
-const k=d.toISOString().split('T')[0];
-const data=getDayData(k);
-if(data.brainstorm)s++;
-else break;
-}
-return s;
-}
-
-function getLongestBrainstorm(){
-let max=0;
-Object.keys(localStorage).forEach(k=>{
-if(k.startsWith('mindstep_day_')){
-const d=JSON.parse(localStorage[k]);
-if(d.brainstorm){
-const mins=d.brainstorm.split(' ').length/150; // approx
-max=Math.max(max,mins);
-}
-}
-});
-return max;
-}
-
-function countAIExports(){
-let c=0;
-Object.keys(localStorage).forEach(k=>{
-if(k.startsWith('mindstep_day_')){
-const d=JSON.parse(localStorage[k]);
-if(d.aiExports)c+=d.aiExports.length;
-}
-});
-return c;
-}
-
-// NOTIFICATIONS
-function showNotification(msg,title){
-const toast=document.createElement('div');
-toast.style.cssText='position:fixed;top:calc(env(safe-area-inset-top) + 140px);left:50%;transform:translateX(-50%);background:var(--bg-1);border:1px solid var(--border-1);border-radius:var(--radius-lg);padding:1rem 1.5rem;box-shadow:var(--shadow-lg);z-index:3000;max-width:90%;font-size:0.9375rem;font-weight:500;animation:slideDown .3s';
-toast.textContent=msg;
-document.body.appendChild(toast);
-setTimeout(()=>toast.remove(),3000);
-
-if('Notification'in window&&Notification.permission==='granted'){
-new Notification(title||'MindStep',{body:msg,icon:'/icon-192.png'});
-}
-}
-
-// THEME
-function setTheme(theme){
-document.documentElement.setAttribute('data-theme',theme);
-localStorage.setItem('mindstep_theme',theme);
-['Light','Auto','Dark'].forEach(t=>document.getElementById('theme'+t)?.classList.remove('active'));
-document.getElementById('theme'+theme.charAt(0).toUpperCase()+theme.slice(1))?.classList.add('active');
-}
-
-// SETTINGS
-function editProfile(){
-showScreen('screen-welcome');
-const u=JSON.parse(localStorage.getItem('mindstep_user'));
-document.getElementById('userName').value=u.name;
-document.getElementById('userAge').value=u.age||'';
-document.getElementById('userGender').value=u.gender||'';
-}
-
-function editRoutines(){
-showScreen('screen-routines');
-const list=document.getElementById('routineList');
-list.innerHTML='';
-routines.forEach(r=>{
-addRoutineSetup();
-const inputs=list.querySelectorAll('input[type="text"]');
-inputs[inputs.length-1].value=r;
-});
-}
-
-function exportAllData(){
-try{
-const all={
-user:JSON.parse(localStorage.getItem('mindstep_user')),
-routines,
-badges:JSON.parse(localStorage.getItem('mindstep_badges')||'[]'),
-version:APP_VERSION,
-exportDate:new Date().toISOString(),
-days:{}
-};
-
-Object.keys(localStorage).forEach(k=>{
-if(k.startsWith('mindstep_day_')){
-all.days[k.replace('mindstep_day_','')]=JSON.parse(localStorage[k]);
-}
-});
-
-const blob=new Blob([JSON.stringify(all,null,2)],{type:'application/json'});
-const url=URL.createObjectURL(blob);
-const a=document.createElement('a');
-a.href=url;
-a.download=`mindstep_export_${new Date().toISOString().split('T')[0]}.json`;
-a.click();
-URL.revokeObjectURL(url);
-showNotification('💾 Tutti i dati esportati','Export');
-}catch(e){alert('Errore export')}
-}
-
-function resetApp(){
-if(!confirm('⚠️ Cancellare TUTTI i dati?'))return;
-if(!confirm('Ultima conferma? Non potrai recuperarli.'))return;
-localStorage.clear();
-location.reload();
-}
-
-// HISTORY - BUG FIX #003: Empty state
-function loadHistoryView(){
-const container=document.getElementById('historyView');
-if(!container)return;
-
-const days=Object.keys(localStorage)
-.filter(k=>k.startsWith('mindstep_day_'))
-.map(k=>({key:k.replace('mindstep_day_',''),data:JSON.parse(localStorage[k])}))
-.sort((a,b)=>b.key.localeCompare(a.key));
-
-if(!days.length){
-container.innerHTML=`
-<div class="empty-state">
-<svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-<rect x="3" y="4" width="18" height="18" rx="2"/>
-<path d="M16 2v4M8 2v4M3 10h18"/>
-</svg>
-<div class="empty-title">Nessun dato disponibile</div>
-<div class="empty-desc">Inizia a camminare e registrare i tuoi pensieri.<br>Il tuo storico apparirà qui.</div>
-</div>
-`;
-return;
-}
-
-container.innerHTML=days.map(({key,data})=>{
-const date=new Date(key);
-const dateStr=date.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'});
-const hasRoutine=data.routines&&Object.values(data.routines).some(v=>v);
-const hasWalk=!!data.walk;
-const hasBrain=!!data.brainstorm;
-
-return`
-<div class="card" style="margin-bottom:0.75rem;padding:1rem;cursor:pointer" onclick="showDayDetail(new Date('${key}'))">
-<div style="display:flex;justify-content:space-between;align-items:center">
-<div>
-<div style="font-weight:600;margin-bottom:0.25rem">${dateStr}</div>
-<div style="font-size:0.875rem;color:var(--text-3);display:flex;gap:0.75rem">
-${hasRoutine?'<span>✅ Routine</span>':''}
-${hasWalk?'<span>🚶 '+((data.walk.distance||0).toFixed(1))+'km</span>':''}
-${hasBrain?'<span>💭 Note</span>':''}
-</div>
-</div>
-<svg style="width:1.25rem;height:1.25rem;color:var(--text-3)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-</div>
-</div>
-`;
-}).join('');
-}
-
-// DATA
-function getDayData(key){
-return JSON.parse(localStorage.getItem(`mindstep_day_${key}`)||'{}');
-}
-
-function saveDayData(key,data){
-localStorage.setItem(`mindstep_day_${key}`,JSON.stringify(data));
-}
-
-function loadDayData(){
-const key=currentDate.toISOString().split('T')[0];
-const d=getDayData(key);
-
-// Load brainstorm notes
-document.getElementById('brainstormNotes').value=d.brainstorm||'';
-transcriptText=d.brainstorm||'';
-}
-
-// MODAL CLOSE
-window.addEventListener('click',e=>{
-if(e.target===document.getElementById('exportModal'))closeExportModal();
-if(e.target===document.getElementById('badgeModal'))closeBadgeModal();
-if(e.target===document.getElementById('dayModal'))closeDayModal();
-});
-
-// INIT ON LOAD
-init();
-const savedTheme=localStorage.getItem('mindstep_theme')||'auto';
-setTheme(savedTheme);
-
-// Load history when switching tabs
-document.getElementById('navHistory')?.addEventListener('click',()=>setTimeout(loadHistoryView,100));
-
-console.log('🧠 MindStep v'+APP_VERSION+' - Mindwalking Intelligence');
-</script></body></html>
+<script src="app-complete.js"></script>
+</body>
+</html>
