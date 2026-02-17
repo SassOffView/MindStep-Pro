@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="it" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MindStep">
+<meta name="theme-color" content="#00d4ff">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-512.png">
+<title>MindStep</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--n:#0a1128;--n2:#1a2357;--n3:#2b3a7f;--n4:#3b4fa0;--c:#00d4ff;--c2:#33ddff;--c3:#5ce1e6;--c4:#7fecf0;--bg:#f8f9fa;--card:#ffffff;--bdr:#e5e7eb;--tx:#0f1419;--tx2:#6b7280;--gr:linear-gradient(135deg,var(--c),var(--c3));--grd:linear-gradient(135deg,var(--n4),var(--c));--sh:0 1px 4px rgba(15,20,25,.08);--sh2:0 4px 16px rgba(15,20,25,.12);--r:12px;--t:220ms cubic-bezier(.4,0,.2,1)}
+[data-theme=dark]{--bg:#050d1e;--card:#0a1128;--bdr:#1a2357;--tx:#f0f4ff;--tx2:#8b92a3}
+@media(prefers-color-scheme:dark){[data-theme=auto]{--bg:#050d1e;--card:#0a1128;--bdr:#1a2357;--tx:#f0f4ff;--tx2:#8b92a3}}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:Inter,-apple-system,sans-serif;background:var(--bg);color:var(--tx);overflow-x:hidden;padding-top:calc(env(safe-area-inset-top,0px) + 128px);padding-bottom:40px}
+.screen{display:none;padding:16px 18px 32px;max-width:580px;margin:0 auto;animation:up .25s}
+.screen.on{display:block}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.hdr{position:fixed;top:env(safe-area-inset-top,0);left:0;right:0;background:var(--card);border-bottom:1px solid var(--bdr);z-index:900;box-shadow:var(--sh)}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;max-width:580px;margin:0 auto}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-img{width:36px;height:36px;object-fit:contain;border-radius:8px}
+.brand{font-size:19px;font-weight:800;background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.wpill{font-size:13px;font-weight:600;color:var(--tx2);display:flex;align-items:center;gap:4px}
+.spill{background:rgba(0,212,255,.1);color:var(--c);padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800;display:flex;align-items:center;gap:4px}
+.nav{display:flex;border-top:1px solid var(--bdr);max-width:580px;margin:0 auto}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;cursor:pointer;color:var(--tx2);border:none;background:none;font-family:inherit;transition:var(--t)}
+.nb:active{opacity:.7}
+.nb.on{color:var(--c)}
+.nb svg{width:22px;height:22px;stroke-width:2}
+.nb span{font-size:10px;font-weight:700;letter-spacing:.01em}
+.card{background:var(--card);border:1px solid var(--bdr);border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;cursor:pointer;user-select:none}
+.ct{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700}
+.ct svg,.ci{width:20px;height:20px;stroke:var(--c);stroke-width:2;fill:none;flex-shrink:0}
+.chv{width:20px;height:20px;stroke:var(--tx2);stroke-width:2;fill:none;transition:transform var(--t)}
+.chv.o{transform:rotate(180deg)}
+.col{overflow:hidden;max-height:0;transition:max-height .35s cubic-bezier(.4,0,.2,1)}
+.col.o{max-height:4000px}
+.qcard{background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(92,225,230,.04));border:1px solid rgba(0,212,255,.2);border-radius:var(--r);padding:16px 18px;margin-bottom:14px}
+.qt{font-style:italic;font-size:14px;line-height:1.7;color:var(--tx);margin-bottom:8px}
+.qa{font-size:12px;font-weight:700;color:var(--c);text-align:right}
+.pw{margin:12px 0}
+.pt{background:var(--bg);height:8px;border-radius:999px;overflow:hidden;border:1px solid var(--bdr)}
+.pb{height:100%;background:var(--gr);border-radius:999px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.pl{text-align:center;margin-top:6px;font-size:13px;font-weight:600;color:var(--tx2)}
+.pp{font-size:17px;font-weight:800;color:var(--c)}
+.rl{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.ri{display:flex;align-items:center;gap:10px;padding:11px 13px;background:var(--bg);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:var(--t)}
+.ri.done{background:rgba(92,225,230,.06);border-color:var(--c3)}
+.ri input[type=checkbox]{width:18px;height:18px;accent-color:var(--c);flex-shrink:0}
+.ri-l{font-size:14px;font-weight:500;flex:1}
+.ri.done .ri-l{text-decoration:line-through;opacity:.5}
+.twrap{display:flex;flex-direction:column;align-items:center;gap:14px;padding:16px 0}
+.tsvg{transform:rotate(-90deg)}
+.ttrack{fill:none;stroke:var(--bdr);stroke-width:6}
+.tprog{fill:none;stroke:url(#tg);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .2s}
+.tinner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.ttime{font-family:ui-monospace,'SF Mono',Monaco,monospace;font-size:30px;font-weight:800;color:var(--c);letter-spacing:-.03em}
+.tsub{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx2);margin-top:2px}
+.tcirc{position:relative;width:190px;height:190px}
+.srow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.st{background:var(--bg);border:1px solid var(--bdr);border-radius:10px;padding:12px;text-align:center}
+.sv{font-size:20px;font-weight:800;color:var(--c)}
+.sl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--tx2);margin-top:3px}
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px 20px;border:none;border-radius:10px;font:inherit;font-weight:700;font-size:14px;cursor:pointer;transition:var(--t);letter-spacing:-.01em;width:100%;margin-bottom:8px}
+.btn:active{transform:scale(.97)}
+.bp{background:var(--gr);color:#fff;box-shadow:0 2px 10px rgba(0,212,255,.3)}
+.bs{background:rgba(0,212,255,.08);color:var(--c);border:1.5px solid var(--c)}
+.bo{background:transparent;border:1.5px solid var(--bdr);color:var(--tx)}
+.br{background:transparent;border:1.5px solid #f87171;color:#f87171}
+.btn-h{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.btn-h .btn{margin-bottom:0}
+.mlinks{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.mlink{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:var(--bg);border:1.5px solid var(--bdr);border-radius:10px;text-decoration:none;color:var(--tx);transition:var(--t)}
+.mlink:active{transform:scale(.96)}
+.mlink svg{width:28px;height:28px}
+.mlink span{font-size:11px;font-weight:700}
+.btabs{display:flex;gap:6px;margin-bottom:14px}
+.btab{flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--bdr);font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:var(--t);background:var(--bg);color:var(--tx2);border:none;font-family:inherit}
+.btab.on{background:var(--gr);color:#fff;box-shadow:0 2px 8px rgba(0,212,255,.3)}
+.bgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.badge{display:flex;flex-direction:column;align-items:center;padding:10px 6px;background:var(--bg);border:1.5px solid var(--bdr);border-radius:10px;cursor:pointer;transition:var(--t);aspect-ratio:1}
+.badge:active{transform:scale(.94)}
+.badge.u{background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(92,225,230,.04));border-color:var(--c3);box-shadow:0 2px 10px rgba(0,212,255,.15)}
+.bi{width:32px;height:32px;opacity:.2;transition:opacity .3s;flex-shrink:0}
+.badge.u .bi{opacity:1}
+.bn{font-size:8px;font-weight:700;text-align:center;margin-top:5px;line-height:1.3;color:var(--tx2)}
+.badge.u .bn{color:var(--c)}
+.wgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-bottom:14px}
+.day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);border:1.5px solid var(--bdr);border-radius:9px;cursor:pointer;transition:var(--t);font-size:12px;font-weight:700}
+.day:active{transform:scale(.94)}
+.day.on{background:var(--gr);border-color:transparent;color:#fff;box-shadow:0 2px 8px rgba(0,212,255,.3)}
+.dn{font-size:9px;font-weight:600;opacity:.7;margin-bottom:1px}
+.fg{margin-bottom:14px}
+.fl{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--tx2);margin-bottom:6px}
+input[type=text],input[type=number],input[type=url],select,textarea{width:100%;padding:11px 13px;border:1.5px solid var(--bdr);border-radius:10px;font:inherit;font-size:14px;background:var(--card);color:var(--tx);transition:var(--t)}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--c);box-shadow:0 0 0 3px rgba(0,212,255,.08)}
+textarea{resize:vertical;min-height:90px}
+.sitem{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg);border:1px solid var(--bdr);border-radius:10px;cursor:pointer;transition:var(--t);margin-bottom:8px}
+.sitem:active{transform:scale(.98)}
+.sil{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600}
+.sil svg{width:18px;height:18px;stroke:var(--c);stroke-width:2;fill:none}
+.thtog{display:flex;background:var(--bg);border:1px solid var(--bdr);border-radius:999px;padding:3px;gap:2px;margin-top:6px}
+.thopt{flex:1;padding:7px;border-radius:999px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;transition:var(--t);color:var(--tx2);border:none;background:none;font-family:inherit}
+.thopt.on{background:var(--c);color:#fff}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(10px);z-index:2000;align-items:flex-end;justify-content:center;padding:0}
+.modal.on{display:flex;animation:up .25s}
+.mbox{background:var(--card);border-radius:20px 20px 0 0;padding:24px 20px calc(env(safe-area-inset-bottom,0px) + 24px);width:100%;max-width:580px;max-height:85vh;overflow-y:auto}
+.mhd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.mtitle{font-size:19px;font-weight:800}
+.mx{width:30px;height:30px;border-radius:50%;background:rgba(0,212,255,.1);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--t)}
+.mx:active{background:rgba(0,212,255,.2)}
+.ibar{position:fixed;top:calc(env(safe-area-inset-top,0px) + 132px);left:14px;right:14px;background:var(--card);border:1.5px solid var(--c);border-radius:16px;padding:12px 16px;z-index:1800;display:none;box-shadow:0 8px 32px rgba(0,212,255,.25);animation:up .3s}
+.ibar.on{display:flex;align-items:center;gap:10px}
+.idot{width:8px;height:8px;border-radius:50%;background:var(--c);flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.imsg{flex:1;font-size:12.5px;line-height:1.5;font-weight:500}
+.ix{width:24px;height:24px;border-radius:50%;background:rgba(0,212,255,.1);border:none;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.rind{display:none;align-items:center;gap:8px;padding:10px 12px;background:rgba(248,113,113,.1);border:1px solid #f87171;border-radius:10px;margin-bottom:10px;font-size:13px;font-weight:600;color:#f87171}
+.rind.on{display:flex}
+.rdot{width:8px;height:8px;border-radius:50%;background:#f87171;animation:pulse 1s infinite}
+.empty{text-align:center;padding:40px 20px;color:var(--tx2)}
+.empty svg{width:56px;height:56px;margin:0 auto 14px;opacity:.2;stroke:currentColor;fill:none}
+.empty h3{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--tx)}
+.empty p{font-size:13px;line-height:1.6}
+.aigrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.aib{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px;background:var(--bg);border:1.5px solid var(--bdr);border-radius:10px;cursor:pointer;text-decoration:none;color:var(--tx);transition:var(--t)}
+.aib:hover{border-color:var(--c)}
+.aib:active{transform:scale(.96)}
+.aiico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.ain{font-size:12px;font-weight:700}
+.rsi{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.rsi input{flex:1}
+.delbtn{width:36px;height:36px;border-radius:50%;background:rgba(248,113,113,.1);border:1.5px solid #f87171;color:#f87171;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:var(--t);font-family:inherit}
+.delbtn:active{background:rgba(248,113,113,.2)}
+.vbadge{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);left:12px;background:rgba(0,0,0,.7);color:#fff;padding:3px 9px;border-radius:8px;font-size:10px;font-weight:700;z-index:999;letter-spacing:.03em}
+h2.pgt{font-size:20px;font-weight:800;margin-bottom:16px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;overflow:hidden">
+<defs>
+<linearGradient id="tg"><stop offset="0%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#5ce1e6"/></linearGradient>
+<linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3b4fa0"/><stop offset="50%" stop-color="#00d4ff"/><stop offset="100%" stop-color="#5ce1e6"/></linearGradient>
+</defs>
+</svg>
+<div class="vbadge">v5.2</div>
+<div class="ibar" id="ibar"><div class="idot"></div><div class="imsg" id="imsg"></div><button class="ix" onclick="closeI()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<header class="hdr">
+<div class="hdr-top">
+<div class="logo-wrap">
+<img class="logo-img" src="./logo.png" alt="" onerror="this.style.display='none'">
+<span class="brand" id="brandN">MindStep</span>
+</div>
+<div class="hdr-r">
+<div class="wpill"><span id="wIco">—</span><span id="wTmp">—</span></div>
+<div class="spill"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.5 8 4 12 4 15c0 4.4 3.6 8 8 8s8-3.6 8-8c0-3-2.5-7-8-13z"/></svg><span id="strVal">0</span></div>
+</div>
+</div>
+<nav class="nav">
+<button class="nb on" onclick="goTab('home')" id="nt-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg><span data-k="home">Home</span></button>
+<button class="nb" onclick="goTab('calendar')" id="nt-calendar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span data-k="history">Storico</span></button>
+<button class="nb" onclick="goTab('stats')" id="nt-stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 20V10M12 20V4M6 20v-6"/></svg><span data-k="data">Dati</span></button>
+<button class="nb" onclick="goTab('music')" id="nt-music"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span data-k="music">Musica</span></button>
+<button class="nb" onclick="goTab('achievements')" id="nt-achievements"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="6"/><path d="M8.2 13.7L6 22l6-3 6 3-2.2-8.3"/></svg><span data-k="awards">Traguardi</span></button>
+<button class="nb" onclick="goTab('settings')" id="nt-settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span data-k="settings">Altro</span></button>
+</nav>
+</header>
+
+<!-- WELCOME -->
+<div class="screen on" id="s-welcome">
+<div style="text-align:center;padding:28px 0 20px">
+<img src="./logo.png" alt="MindStep" style="width:90px;height:90px;object-fit:contain;border-radius:20px;margin-bottom:14px" onerror="this.style.display='none'">
+<h1 style="font-size:26px;font-weight:800;background:var(--grd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px">MindStep</h1>
+<p style="color:var(--tx2);font-size:14px;line-height:1.7" id="wTagline">Trasforma il movimento in mindwork.<br>Pensa, cammina, cresci.</p>
+</div>
+<div class="card">
+<div class="fg"><label class="fl" data-k="language">Lingua / Language</label><select id="langSel" onchange="setLang(this.value)"><option value="it">🇮🇹 Italiano</option><option value="en">🇬🇧 English</option></select></div>
+<div class="fg"><label class="fl" data-k="name">Nome</label><input type="text" id="uName" placeholder="Il tuo nome" maxlength="24"></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<div class="fg"><label class="fl" data-k="age">Età</label><input type="number" id="uAge" placeholder="25" min="1" max="120"></div>
+<div class="fg"><label class="fl" data-k="gender">Sesso</label><select id="uGender"><option value="" data-k="select">Seleziona</option><option value="M" data-k="male">Maschio</option><option value="F" data-k="female">Femmina</option><option value="A" data-k="other">Altro</option></select></div>
+</div>
+<div class="fg"><label class="fl" data-k="weight_opt">Peso (opzionale)</label><input type="number" id="uWeight" placeholder="70 kg" min="30" max="250"></div>
+<button class="btn bp" onclick="saveProfile()"><span data-k="start_btn">Inizia MindWalking</span></button>
+</div>
+</div>
+
+<!-- ROUTINE SETUP -->
+<div class="screen" id="s-routines">
+<div style="text-align:center;padding:20px 0 16px">
+<h1 style="font-size:22px;font-weight:800;margin-bottom:8px" data-k="your_routines">Le Tue Routine</h1>
+<p style="color:var(--tx2);font-size:13px;line-height:1.6" data-k="routines_sub">Aggiungi le abitudini quotidiane da tracciare.</p>
+</div>
+<div class="card">
+<div id="rSetupList"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0">
+<span style="font-size:12px;color:var(--tx2)" data-k="routine_count_label">Routine inserite:</span>
+<span style="font-size:17px;font-weight:800;color:var(--c)" id="rCount">0/10</span>
+</div>
+<button class="btn bs" onclick="addRSetup()" id="addRBtn"><span data-k="add_routine">+ Aggiungi Routine</span></button>
+<button class="btn bp" onclick="saveRSetup()"><span data-k="continue">Continua</span></button>
+</div>
+</div>
+
+<!-- HOME -->
+<div class="screen" id="s-home">
+<div class="qcard"><div class="qt" id="qTxt">...</div><div class="qa" id="qAuth"></div></div>
+<div class="card">
+<div class="ch" onclick="tog('rBody','rChv')">
+<div class="ct"><svg class="ci" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span data-k="routine">Routine</span><span id="rSum" style="font-size:13px;font-weight:600;color:var(--c3);margin-left:6px">0/0</span></div>
+<svg class="chv o" id="rChv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+</div>
+<div class="col o" id="rBody">
+<div class="pw"><div class="pt"><div class="pb" id="pBar" style="width:0%"></div></div><div class="pl"><span class="pp" id="pPct">0%</span> <span data-k="completed">Completato</span></div></div>
+<div class="rl" id="rList"></div>
+</div>
+</div>
+<div class="card">
+<div class="ch" onclick="tog('wBody','wChv')">
+<div class="ct"><svg class="ci" viewBox="0 0 24 24" fill="var(--c)" stroke="none"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg><span data-k="walk">Camminata</span></div>
+<svg class="chv o" id="wChv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+</div>
+<div class="col o" id="wBody">
+<div class="twrap"><div class="tcirc"><svg class="tsvg" width="190" height="190" viewBox="0 0 190 190"><circle class="ttrack" cx="95" cy="95" r="86"/><circle class="tprog" id="tProg" cx="95" cy="95" r="86" stroke-dasharray="540" stroke-dashoffset="540"/></svg><div class="tinner"><div class="ttime" id="tDisp">00:00:00</div><div class="tsub" data-k="time">Tempo</div></div></div></div>
+<button class="btn bp" onclick="doWalk()" id="wBtn"><span id="wBtnT" data-k="start">Inizia</span></button>
+<div class="srow">
+<div class="st"><div class="sv" id="distV">0.0</div><div class="sl">km</div></div>
+<div class="st"><div class="sv" id="spdV">0.0</div><div class="sl">km/h</div></div>
+<div class="st"><div class="sv" id="kcalV">0</div><div class="sl">kcal</div></div>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="ch" onclick="tog('bsBody','bsChv')">
+<div class="ct"><svg class="ci" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span data-k="brainstorm">Brainstorming</span></div>
+<svg class="chv o" id="bsChv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+</div>
+<div class="col o" id="bsBody">
+<div class="rind" id="rInd"><div class="rdot"></div><span data-k="recording">Registrazione in corso...</span></div>
+<div class="btn-h">
+<button class="btn bs" onclick="doRec()" id="recBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="6"/><path d="M19 12v1a7 7 0 01-14 0v-1M12 19v4M8 23h8"/></svg><span id="recT" data-k="record">Registra</span></button>
+<button class="btn bo" onclick="openX('exportM')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg><span data-k="export">Esporta</span></button>
+</div>
+<textarea id="bsTA" onchange="saveBs()"></textarea>
+</div>
+</div>
+</div>
+
+<!-- STORICO -->
+<div class="screen" id="s-calendar"><h2 class="pgt" data-k="history_title">Storico Attività</h2><div class="card" id="calCard"><div class="empty"><svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><h3 data-k="no_data">Nessun dato</h3><p data-k="no_data_sub">Inizia a camminare.</p></div></div></div>
+
+<!-- DATI -->
+<div class="screen" id="s-stats"><h2 class="pgt" data-k="weekly_data">Dati Settimanali</h2><div class="card"><div class="wgrid" id="wGrid"></div><div class="srow"><div class="st"><div class="sv" id="wDays">0/7</div><div class="sl" data-k="days">Giorni</div></div><div class="st"><div class="sv" id="wKm">0</div><div class="sl">KM</div></div><div class="st"><div class="sv" id="wRout">0%</div><div class="sl" data-k="routine">Routine</div></div></div></div></div>
+
+<!-- MUSICA -->
+<div class="screen" id="s-music">
+<h2 class="pgt" data-k="music_title">Musica</h2>
+<div class="card">
+<div class="mlinks">
+<a href="https://open.spotify.com" target="_blank" rel="noopener" class="mlink"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#1db954"/><path d="M8 15.4c2.7-1 5.7-.9 8.2.4.3.2.7.1.9-.2.2-.3.1-.7-.2-.9-2.9-1.5-6.2-1.6-9.2-.4-.3.1-.5.5-.4.9.2.3.5.4.7.2zM7.4 13c3.2-1.2 6.8-1.1 9.8.4.4.2.8 0 1-.3.2-.4 0-.8-.3-1-3.4-1.7-7.3-1.8-10.7-.4-.4.2-.5.7-.4 1 .2.4.6.5 1 .3zM7 10.2C10.7 8.8 15 8.9 18.6 10.8c.4.2.9.1 1.1-.4.2-.4.1-.9-.4-1.1C15.4 7.4 10.5 7.3 6.4 8.9c-.5.2-.7.7-.5 1.1.2.4.7.6 1.1.2z" fill="white"/></svg><span>Spotify</span></a>
+<a href="https://music.youtube.com" target="_blank" rel="noopener" class="mlink"><svg viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#ff0000"/><polygon points="10,8 17,12 10,16" fill="white"/></svg><span>YouTube</span></a>
+<a href="https://music.apple.com" target="_blank" rel="noopener" class="mlink"><svg viewBox="0 0 24 24"><rect width="24" height="24" rx="5" fill="#fc3c44"/><path d="M17 6l-6 1.2v7.2a2.5 2.5 0 10.8 1.8V10.5l4.4-.9V13a2.5 2.5 0 10.8 1.8z" fill="white"/></svg><span>Apple</span></a>
+</div>
+<div class="fg"><label class="fl" data-k="custom_link">Link Personalizzato</label><input type="url" id="cusUrl" placeholder="https://..."><button class="btn bs" onclick="opCus()" style="margin-top:8px"><span data-k="open">Apri</span></button></div>
+<div class="fg" style="margin-top:4px"><label class="fl" data-k="podcast">Podcast</label><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><a href="https://open.spotify.com/genre/podcasts-page" target="_blank" rel="noopener" class="btn bo" style="text-decoration:none;margin-bottom:0">Spotify</a><a href="https://podcasts.apple.com" target="_blank" rel="noopener" class="btn bo" style="text-decoration:none;margin-bottom:0">Apple</a></div></div>
+</div>
+</div>
+
+<!-- TRAGUARDI -->
+<div class="screen" id="s-achievements">
+<h2 class="pgt" data-k="awards_title">Traguardi</h2>
+<div class="btabs">
+<button class="btab on" onclick="fBadge('all')" id="bt-all" data-k="all">Tutti</button>
+<button class="btab" onclick="fBadge('daily')" id="bt-daily" data-k="daily">Giornalieri</button>
+<button class="btab" onclick="fBadge('weekly')" id="bt-weekly" data-k="weekly">Settimanali</button>
+<button class="btab" onclick="fBadge('monthly')" id="bt-monthly" data-k="monthly">Mensili</button>
+</div>
+<div class="card" style="padding:14px"><div class="bgrid" id="bGrid"></div></div>
+</div>
+
+<!-- IMPOSTAZIONI -->
+<div class="screen" id="s-settings">
+<h2 class="pgt" data-k="settings_title">Impostazioni</h2>
+<div class="card">
+<div class="fg"><label class="fl" data-k="theme">Tema</label>
+<div class="thtog"><button class="thopt" onclick="setTh('light')" id="th-light" data-k="light">Chiaro</button><button class="thopt on" onclick="setTh('auto')" id="th-auto" data-k="auto">Auto</button><button class="thopt" onclick="setTh('dark')" id="th-dark" data-k="dark">Scuro</button></div>
+</div>
+<div class="fg"><label class="fl" data-k="language">Lingua</label><select id="langSet" onchange="setLang(this.value)"><option value="it">🇮🇹 Italiano</option><option value="en">🇬🇧 English</option></select></div>
+</div>
+<div class="sitem" onclick="doEditPro()"><div class="sil"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/></svg><span data-k="edit_profile">Modifica Profilo</span></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+<div class="sitem" onclick="openX('editRM')"><div class="sil"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span data-k="edit_routines">Modifica Routine</span></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+<div class="sitem" onclick="expAll()"><div class="sil"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg><span data-k="export_all">Esporta Tutti i Dati</span></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--tx2)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+<div class="sitem" onclick="resetAll()" style="color:#f87171"><div class="sil" style="color:#f87171"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg><span data-k="reset">Reset App</span></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></div>
+</div>
+
+<!-- MODAL EXPORT -->
+<div class="modal" id="exportM"><div class="mbox"><div class="mhd"><h3 class="mtitle" data-k="export_notes">Esporta Note</h3><button class="mx" onclick="closeX('exportM')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div>
+<button class="btn bp" onclick="expTxt()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span data-k="export_txt">Trascrizione (.txt)</span></button>
+<p style="font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin:10px 0 8px" data-k="send_ai">Invia ad AI:</p>
+<div class="aigrid">
+<a href="#" onclick="sendAI('claude');return false" class="aib"><div class="aiico" style="background:linear-gradient(135deg,#D97757,#c56647)"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><span class="ain">Claude</span></a>
+<a href="#" onclick="sendAI('chatgpt');return false" class="aib"><div class="aiico" style="background:linear-gradient(135deg,#10a37f,#0d8b6a)"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4" stroke="#10a37f" stroke-width="2" fill="none"/></svg></div><span class="ain">ChatGPT</span></a>
+<a href="#" onclick="sendAI('gemini');return false" class="aib"><div class="aiico" style="background:linear-gradient(135deg,#4285f4,#3367d6)"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="12 2 15 9 22 9.5 17 14 18.5 21 12 17.5 5.5 21 7 14 2 9.5 9 9"/></svg></div><span class="ain">Gemini</span></a>
+<a href="#" onclick="sendAI('copilot');return false" class="aib"><div class="aiico" style="background:linear-gradient(135deg,#0078d4,#005a9e)"><svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 2l9 4.5v9L12 22l-9-6.5v-9z"/></svg></div><span class="ain">Copilot</span></a>
+</div>
+</div></div>
+
+<!-- MODAL BADGE DETAIL -->
+<div class="modal" id="bdgM"><div class="mbox"><div class="mhd"><h3 class="mtitle" id="bdgMT">Traguardo</h3><button class="mx" onclick="closeX('bdgM')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div style="text-align:center;padding:10px 0 16px"><div id="bdgMI" style="margin:0 auto 14px"></div><p id="bdgMD" style="color:var(--tx2);font-size:14px;line-height:1.7"></p><div id="bdgMS" style="margin-top:12px;font-size:13px;font-weight:700"></div></div></div></div>
+
+<!-- MODAL EDIT ROUTINES -->
+<div class="modal" id="editRM"><div class="mbox"><div class="mhd"><h3 class="mtitle" data-k="edit_routines">Modifica Routine</h3><button class="mx" onclick="closeX('editRM')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M18 6L6 18M6 6l12 12"/></svg></button></div><div id="eRList"></div><button class="btn bs" onclick="addER()"><span data-k="add_routine">+ Aggiungi</span></button><button class="btn bp" onclick="saveER()"><span data-k="save">Salva Modifiche</span></button></div></div>
+
+<script>
+const VER='5.2';
+let routines=[],W={on:false,paused:false,t0:0,el:0,pt:0,dist:0,lp:null,wid:null};
+let tInt=null,recO=null,recOn=false,tscript='',lang='it',badgeFilt='all',iShown={};
+const TR={it:{home:'Home',history:'Storico',data:'Dati',music:'Musica',awards:'Traguardi',settings:'Altro',name:'Nome',age:'Età',gender:'Sesso',select:'Seleziona',male:'Maschio',female:'Femmina',other:'Altro',weight_opt:'Peso (opzionale)',language:'Lingua',start_btn:'Inizia MindWalking',your_routines:'Le Tue Routine',routines_sub:'Aggiungi le abitudini quotidiane.',routine_count_label:'Inserite:',add_routine:'+ Aggiungi Routine',continue:'Continua',routine:'Routine',completed:'Completato',walk:'Camminata',time:'Tempo',start:'Inizia',pause:'Pausa',resume:'Riprendi',brainstorm:'Brainstorming',recording:'Registrazione in corso...',record:'Registra',stop:'Stop',export:'Esporta',history_title:'Storico Attività',no_data:'Nessun dato',no_data_sub:'Inizia a camminare.',weekly_data:'Dati Settimanali',days:'Giorni',music_title:'Musica',custom_link:'Link Personalizzato',open:'Apri',podcast:'Podcast',awards_title:'Traguardi',all:'Tutti',daily:'Giornalieri',weekly:'Settimanali',monthly:'Mensili',settings_title:'Impostazioni',theme:'Tema',light:'Chiaro',auto:'Auto',dark:'Scuro',edit_profile:'Modifica Profilo',edit_routines:'Modifica Routine',export_all:'Esporta Tutti i Dati',reset:'Reset App',export_notes:'Esporta Note',export_txt:'Trascrizione (.txt)',send_ai:'Invia ad AI:',save:'Salva Modifiche',unlocked:'Sbloccato',locked:'Da sbloccare'},en:{home:'Home',history:'History',data:'Data',music:'Music',awards:'Awards',settings:'More',name:'Name',age:'Age',gender:'Gender',select:'Select',male:'Male',female:'Female',other:'Other',weight_opt:'Weight (optional)',language:'Language',start_btn:'Start MindWalking',your_routines:'Your Routines',routines_sub:'Add your daily habits.',routine_count_label:'Added:',add_routine:'+ Add Routine',continue:'Continue',routine:'Routine',completed:'Completed',walk:'Walk',time:'Time',start:'Start',pause:'Pause',resume:'Resume',brainstorm:'Brainstorming',recording:'Recording...',record:'Record',stop:'Stop',export:'Export',history_title:'Activity History',no_data:'No data',no_data_sub:'Start walking.',weekly_data:'Weekly Data',days:'Days',music_title:'Music',custom_link:'Custom Link',open:'Open',podcast:'Podcast',awards_title:'Awards',all:'All',daily:'Daily',weekly:'Weekly',monthly:'Monthly',settings_title:'Settings',theme:'Theme',light:'Light',auto:'Auto',dark:'Dark',edit_profile:'Edit Profile',edit_routines:'Edit Routines',export_all:'Export All Data',reset:'Reset App',export_notes:'Export Notes',export_txt:'Transcript (.txt)',send_ai:'Send to AI:',save:'Save Changes',unlocked:'Unlocked',locked:'Locked'}};
+const QI={it:[{t:"Il successo è la somma di piccoli sforzi ripetuti ogni giorno.",a:"R. Collier"},{t:"Il corpo raggiunge ciò che la mente crede.",a:"N. Hill"},{t:"Camminare è la migliore medicina per l'uomo.",a:"Ippocrate"},{t:"In ogni passo c'è una risposta. Devi solo ascoltare.",a:"MindStep"},{t:"La motivazione ti fa iniziare. L'abitudine ti fa continuare.",a:"J. Ryun"},{t:"Non è la forza fisica a vincere, ma la mente che non si arrende.",a:"MindStep"},{t:"Ogni camminata è un pensiero in movimento.",a:"MindStep"}],en:[{t:"Success is the sum of small efforts repeated day in and day out.",a:"R. Collier"},{t:"The body achieves what the mind believes.",a:"N. Hill"},{t:"Walking is man's best medicine.",a:"Hippocrates"},{t:"In every step there is an answer. You just have to listen.",a:"MindStep"},{t:"Motivation is what gets you started. Habit is what keeps you going.",a:"J. Ryun"},{t:"Every walk is a thought in motion.",a:"MindStep"}]};
+function setLang(l){lang=l;localStorage.setItem('ms_lang',l);document.getElementById('htmlRoot').lang=l;['langSel','langSet'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=l});document.querySelectorAll('[data-k]').forEach(el=>{const k=el.getAttribute('data-k');if(TR[l]&&TR[l][k])el.textContent=TR[l][k]});const tl=document.getElementById('wTagline');if(tl)tl.innerHTML=l==='en'?'Transform movement into mindwork.<br>Think, walk, grow.':'Trasforma il movimento in mindwork.<br>Pensa, cammina, cresci.';renderBadges(badgeFilt)}
+const BADGES=[{id:'ignition',n:'Punto di Innesco',ne:'Ignition Point',cat:'daily',ic:'pent',d:'5.000 passi completati'},{id:'steady',n:'Ritmo Costante',ne:'Steady Rhythm',cat:'daily',ic:'wave',d:'20 minuti a ritmo costante'},{id:'dawn',n:'Alba Produttiva',ne:'Productive Dawn',cat:'daily',ic:'sun',d:'Camminata prima delle 08:00'},{id:'base3',n:'Resistenza Base',ne:'Base Endurance',cat:'daily',ic:'dot3',d:'3 km percorsi'},{id:'turbo',n:'Turbo Step',ne:'Turbo Step',cat:'daily',ic:'bolt',d:'10 min sopra 120 passi/min'},{id:'double',n:'Doppia Sessione',ne:'Double Session',cat:'daily',ic:'inf',d:'Due sessioni in una giornata'},{id:'evening',n:'Chiusura Serale',ne:'Evening Closure',cat:'daily',ic:'moon',d:'Sessione dopo le 18:00'},{id:'ppace',n:'Passo Perfetto',ne:'Perfect Pace',cat:'daily',ic:'tgt',d:'5–6 km/h per 15 minuti'},{id:'p10k',n:'Power 10K',ne:'Power 10K',cat:'daily',ic:'crown',d:'10.000 passi in un giorno'},{id:'zen',n:'Camminatore Zen',ne:'Zen Walker',cat:'daily',ic:'circ',d:'30 minuti senza interruzioni'},{id:'flow5',n:'Flusso di Coscienza',ne:'Consciousness Flow',cat:'daily',ic:'strm',d:'5 min registrazione continua'},{id:'synth',n:'Sintesi Immediata',ne:'Immediate Synthesis',cat:'daily',ic:'nod',d:'Prima nota + elaborazione AI'},{id:'arch',n:'Architetto di Idee',ne:'Idea Architect',cat:'daily',ic:'tri',d:'3 trascrizioni in una sessione'},{id:'dfoc',n:'Focus Profondo',ne:'Deep Focus',cat:'daily',ic:'eye',d:'Sessione senza interruzioni'},{id:'eureka',n:'Momento Eureka',ne:'Eureka Moment',cat:'daily',ic:'bulb',d:'Nota catturata al 20° minuto'},{id:'seed',n:'Seme di Pensiero',ne:'Thought Seed',cat:'daily',ic:'seed',d:'Prima registrazione giornaliera'},{id:'clar',n:'Cercatore Chiarezza',ne:'Clarity Finder',cat:'daily',ic:'prism',d:'Risposta a un pop-up'},{id:'qcap',n:'Cattura Rapida',ne:'Quick Capture',cat:'daily',ic:'flash',d:'Nota catturata in meno di 2 min'},{id:'morn',n:'Mente Mattutina',ne:'Morning Mind',cat:'daily',ic:'sun2',d:'Brainstorm prima delle 09:00'},{id:'nref',n:'Riflessore Notturno',ne:'Night Reflector',cat:'daily',ic:'moon2',d:'Brainstorm dopo le 20:00'},{id:'iwk',n:'Settimana di Ferro',ne:'Iron Week',cat:'weekly',ic:'hex',d:'7/7 giorni attivi'},{id:'mara',n:'Maratona Spezzata',ne:'Split Marathon',cat:'weekly',ic:'path',d:'42 km totali in una settimana'},{id:'pm',n:'Pace Maker',ne:'Pace Maker',cat:'weekly',ic:'aup',d:'Ritmo migliorato del 5%'},{id:'asc',n:'Ascensione',ne:'Ascension',cat:'weekly',ic:'stairs',d:'Durata crescente ogni giorno'},{id:'cons',n:'Re di Costanza',ne:'Consistency King',cat:'weekly',ic:'clock',d:'Stesso orario ogni giorno'},{id:'vol',n:'Master Volume',ne:'Volume Master',cat:'weekly',ic:'mtn',d:'70.000 passi settimanali'},{id:'wend',n:'Guerriero Weekend',ne:'Weekend Warrior',cat:'weekly',ic:'shld',d:'90 min nel weekend'},{id:'expl',n:'Esploratore',ne:'Explorer',cat:'weekly',ic:'comp',d:'5+ percorsi diversi'},{id:'enc',n:'Enciclopedia',ne:'Encyclopedia',cat:'weekly',ic:'book',d:'60 min totali brainstorming'},{id:'org',n:'Mente Organizzata',ne:'Organized Mind',cat:'weekly',ic:'grid',d:'100% note categorizzate'},{id:'vis',n:'Visionario',ne:'Visionary',cat:'weekly',ic:'tele',d:'1 nota/giorno per 7 giorni'},{id:'ps',n:'Problem Solver',ne:'Problem Solver',cat:'weekly',ic:'puzz',d:'5 sessioni task-focused'},{id:'aic',n:'Collaboratore AI',ne:'AI Collaborator',cat:'weekly',ic:'net',d:'5+ export AI in una settimana'},{id:'dtk',n:'Pensatore Profondo',ne:'Deep Thinker',cat:'weekly',ic:'depth',d:'3 sessioni > 30 minuti'},{id:'meta',n:'Metamorfosi',ne:'Metamorphosis',cat:'monthly',ic:'butt',d:'200.000 passi in un mese'},{id:'cent',n:'Centurione',ne:'Centurion',cat:'monthly',ic:'road',d:'100 km nel mese solare'},{id:'sync',n:'Sincronia Totale',ne:'Total Sync',cat:'monthly',ic:'wsync',d:'20 ore movimento mensile'},{id:'im',n:'Mese di Ferro',ne:'Iron Month',cat:'monthly',ic:'fort',d:'30/30 giorni attivi'},{id:'peak',n:'Peak Performer',ne:'Peak Performer',cat:'monthly',ic:'pk',d:'10 giorni oltre i 10.000 passi'},{id:'mm',n:'Master Mind',ne:'Master Mind',cat:'monthly',ic:'brain',d:'500 min brainstorming mensile'},{id:'str',n:'Evoluzione Strategica',ne:'Strategic Evolution',cat:'monthly',ic:'chess',d:'Top 10 idee revisionate'},{id:'ka',n:'Architetto Conoscenza',ne:'Knowledge Architect',cat:'monthly',ic:'bp',d:'100+ note organizzate'},{id:'ais',n:'Sinergia AI',ne:'AI Synergy',cat:'monthly',ic:'hai',d:'20+ collaborazioni AI'}];
+function getBadgeIcon(ic,u){const s=u?'url(#bg2)':'var(--bdr)';const M={pent:`<svg class="bi" viewBox="0 0 32 32" fill="none"><polygon points="16,4 28,12 24,26 8,26 4,12" stroke="${s}" stroke-width="2"/></svg>`,wave:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M2 16 L8 16 L10 10 L12 22 L14 16 L16 16 L18 10 L20 22 L22 16 L30 16" stroke="${s}" stroke-width="2" stroke-linecap="round"/></svg>`,sun:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="18" r="6" stroke="${s}" stroke-width="2"/><line x1="16" y1="4" x2="16" y2="8" stroke="${s}" stroke-width="2" stroke-linecap="round"/><line x1="4" y1="18" x2="28" y2="18" stroke="${s}" stroke-width="1.5" stroke-dasharray="2,2"/></svg>`,dot3:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="8" cy="16" r="2.5" fill="${s}"/><circle cx="16" cy="16" r="2.5" fill="${s}"/><circle cx="24" cy="16" r="2.5" fill="${s}"/><line x1="8" y1="16" x2="24" y2="16" stroke="${s}" stroke-width="1" stroke-dasharray="3,2"/></svg>`,bolt:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M18 4L10 18h7L12 28 22 14h-6z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/></svg>`,inf:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M8 16c0-3.3 2.7-6 6-6s6 5.5 8 5.5S26 12.7 26 16s-2.7 6-4-0.5S14 22 12 22 8 19.3 8 16z" stroke="${s}" stroke-width="2"/></svg>`,moon:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M20 6a10 10 0 000 20 8 8 0 110-20" stroke="${s}" stroke-width="2"/></svg>`,tgt:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="12" stroke="${s}" stroke-width="2"/><circle cx="16" cy="16" r="7" stroke="${s}" stroke-width="2"/><circle cx="16" cy="16" r="2" fill="${s}"/></svg>`,crown:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M6 10l4 8h12l4-8-5 3-5-7-5 7z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/><line x1="6" y1="22" x2="26" y2="22" stroke="${s}" stroke-width="2"/></svg>`,circ:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10" stroke="${s}" stroke-width="2"/><path d="M11 16l4 4 6-6" stroke="${s}" stroke-width="2" stroke-linecap="round"/></svg>`,strm:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M4 10Q10 6 16 10T28 10" stroke="${s}" stroke-width="2"/><path d="M4 16Q10 12 16 16T28 16" stroke="${s}" stroke-width="2"/><path d="M4 22Q10 18 16 22T28 22" stroke="${s}" stroke-width="2"/></svg>`,nod:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="8" cy="8" r="3" stroke="${s}" stroke-width="2"/><circle cx="24" cy="8" r="3" stroke="${s}" stroke-width="2"/><circle cx="16" cy="24" r="3" stroke="${s}" stroke-width="2"/><line x1="8" y1="8" x2="16" y2="24" stroke="${s}" stroke-width="1.5"/><line x1="24" y1="8" x2="16" y2="24" stroke="${s}" stroke-width="1.5"/><line x1="8" y1="8" x2="24" y2="8" stroke="${s}" stroke-width="1.5"/></svg>`,tri:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M16 6L28 26H4z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/><line x1="16" y1="16" x2="10" y2="26" stroke="${s}" stroke-width="1"/><line x1="16" y1="16" x2="22" y2="26" stroke="${s}" stroke-width="1"/></svg>`,eye:`<svg class="bi" viewBox="0 0 32 32" fill="none"><ellipse cx="16" cy="16" rx="12" ry="7" stroke="${s}" stroke-width="2"/><circle cx="16" cy="16" r="3" fill="${s}"/></svg>`,bulb:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M11 14a5 5 0 1110 0c0 2-1.5 3.5-2 5H13c-.5-1.5-2-3-2-5z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/><line x1="13" y1="22" x2="19" y2="22" stroke="${s}" stroke-width="2" stroke-linecap="round"/></svg>`,seed:`<svg class="bi" viewBox="0 0 32 32" fill="none"><ellipse cx="16" cy="16" rx="6" ry="9" stroke="${s}" stroke-width="2"/><line x1="16" y1="7" x2="16" y2="25" stroke="${s}" stroke-width="1.5"/></svg>`,prism:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M16 6L28 26H4z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/></svg>`,flash:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M16 4L8 18h8l-2 10 10-14h-8z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/></svg>`,sun2:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="6" stroke="${s}" stroke-width="2"/><line x1="16" y1="4" x2="16" y2="8" stroke="${s}" stroke-width="2" stroke-linecap="round"/><line x1="24" y1="8" x2="22" y2="10" stroke="${s}" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="8" x2="10" y2="10" stroke="${s}" stroke-width="2" stroke-linecap="round"/></svg>`,moon2:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M22 8A10 10 0 1012 22a7 7 0 0010-14z" stroke="${s}" stroke-width="2"/></svg>`,hex:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M16 4L26 10V22L16 28L6 22V10z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/><circle cx="16" cy="16" r="4" fill="${s}" opacity=".5"/></svg>`,path:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M4 16Q8 8 12 16T20 16T28 16" stroke="${s}" stroke-width="2"/></svg>`,aup:`<svg class="bi" viewBox="0 0 32 32" fill="none"><line x1="16" y1="26" x2="16" y2="6" stroke="${s}" stroke-width="2" stroke-linecap="round"/><path d="M10 12l6-6 6 6" stroke="${s}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,stairs:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M6 26H10V22H14V18H18V14H22V10H26" stroke="${s}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,clock:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10" stroke="${s}" stroke-width="2"/><path d="M16 10v6l4 2" stroke="${s}" stroke-width="2" stroke-linecap="round"/></svg>`,mtn:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M4 26L16 8l12 18H4z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/></svg>`,shld:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M16 4L6 8v8c0 6 4.5 11 10 12 5.5-1 10-6 10-12V8z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/></svg>`,comp:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10" stroke="${s}" stroke-width="2"/><polygon points="16,10 18,15 16,20 14,15" fill="${s}"/></svg>`,book:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M6 4h14a2 2 0 012 2v20H8a2 2 0 01-2-2V4z" stroke="${s}" stroke-width="2"/><line x1="10" y1="10" x2="18" y2="10" stroke="${s}" stroke-width="1.5"/><line x1="10" y1="14" x2="18" y2="14" stroke="${s}" stroke-width="1.5"/></svg>`,grid:`<svg class="bi" viewBox="0 0 32 32" fill="none"><rect x="5" y="5" width="8" height="8" rx="1" stroke="${s}" stroke-width="2"/><rect x="19" y="5" width="8" height="8" rx="1" stroke="${s}" stroke-width="2"/><rect x="5" y="19" width="8" height="8" rx="1" stroke="${s}" stroke-width="2"/><rect x="19" y="19" width="8" height="8" rx="1" stroke="${s}" stroke-width="2"/></svg>`,tele:`<svg class="bi" viewBox="0 0 32 32" fill="none"><line x1="8" y1="24" x2="24" y2="8" stroke="${s}" stroke-width="2" stroke-linecap="round"/><ellipse cx="24" cy="8" rx="4" ry="2" transform="rotate(-45 24 8)" stroke="${s}" stroke-width="2" fill="none"/></svg>`,puzz:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M12 6h8v4a2 2 0 002 2h4v8h-4a2 2 0 00-2 2v4h-8v-4a2 2 0 00-2-2H6v-8h4a2 2 0 002-2V6z" stroke="${s}" stroke-width="2"/></svg>`,net:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="3" fill="${s}"/><circle cx="6" cy="8" r="2" stroke="${s}" stroke-width="2"/><circle cx="26" cy="8" r="2" stroke="${s}" stroke-width="2"/><circle cx="6" cy="24" r="2" stroke="${s}" stroke-width="2"/><circle cx="26" cy="24" r="2" stroke="${s}" stroke-width="2"/><line x1="8" y1="9" x2="14" y2="15" stroke="${s}" stroke-width="1.5"/><line x1="24" y1="9" x2="18" y2="15" stroke="${s}" stroke-width="1.5"/><line x1="8" y1="23" x2="14" y2="17" stroke="${s}" stroke-width="1.5"/><line x1="24" y1="23" x2="18" y2="17" stroke="${s}" stroke-width="1.5"/></svg>`,depth:`<svg class="bi" viewBox="0 0 32 32" fill="none"><ellipse cx="16" cy="8" rx="10" ry="4" stroke="${s}" stroke-width="2"/><path d="M6 8v8c0 2.2 4.5 4 10 4s10-1.8 10-4V8" stroke="${s}" stroke-width="2"/><path d="M6 16v4c0 2.2 4.5 4 10 4s10-1.8 10-4v-4" stroke="${s}" stroke-width="1.5" opacity=".5"/></svg>`,butt:`<svg class="bi" viewBox="0 0 32 32" fill="none"><ellipse cx="10" cy="12" rx="6" ry="8" stroke="${s}" stroke-width="2"/><ellipse cx="22" cy="12" rx="6" ry="8" stroke="${s}" stroke-width="2"/><line x1="16" y1="5" x2="16" y2="27" stroke="${s}" stroke-width="2"/></svg>`,road:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M8 28L14 4h4l6 24" stroke="${s}" stroke-width="2" stroke-linecap="round"/><line x1="14" y1="14" x2="18" y2="14" stroke="${s}" stroke-width="1.5" stroke-dasharray="2,2"/></svg>`,wsync:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M2 16Q6 10 10 16T18 16T26 16" stroke="${s}" stroke-width="2"/><path d="M6 20Q10 14 14 20T22 20T30 20" stroke="${s}" stroke-width="1.5" opacity=".5"/></svg>`,fort:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M6 28V16l10-8 10 8v12H6z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/><rect x="12" y="20" width="8" height="8" stroke="${s}" stroke-width="1.5"/></svg>`,pk:`<svg class="bi" viewBox="0 0 32 32" fill="none"><path d="M4 28L16 8l12 20H4z" stroke="${s}" stroke-width="2" stroke-linejoin="round"/><line x1="4" y1="28" x2="28" y2="28" stroke="${s}" stroke-width="2" stroke-linecap="round"/></svg>`,brain:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10" stroke="${s}" stroke-width="2"/><circle cx="12" cy="14" r="2" fill="${s}"/><circle cx="20" cy="14" r="2" fill="${s}"/><circle cx="16" cy="20" r="2" fill="${s}"/><line x1="12" y1="14" x2="16" y2="20" stroke="${s}" stroke-width="1.5"/><line x1="20" y1="14" x2="16" y2="20" stroke="${s}" stroke-width="1.5"/><line x1="12" y1="14" x2="20" y2="14" stroke="${s}" stroke-width="1.5"/></svg>`,chess:`<svg class="bi" viewBox="0 0 32 32" fill="none"><rect x="6" y="20" width="20" height="8" rx="1" stroke="${s}" stroke-width="2"/><path d="M16 20c0-4 4-6 4-10a4 4 0 00-8 0c0 4 4 6 4 10z" stroke="${s}" stroke-width="2"/></svg>`,bp:`<svg class="bi" viewBox="0 0 32 32" fill="none"><rect x="4" y="4" width="24" height="24" rx="2" stroke="${s}" stroke-width="2"/><line x1="4" y1="12" x2="28" y2="12" stroke="${s}" stroke-width="1"/><line x1="4" y1="20" x2="28" y2="20" stroke="${s}" stroke-width="1"/><line x1="12" y1="4" x2="12" y2="28" stroke="${s}" stroke-width="1"/><line x1="20" y1="4" x2="20" y2="28" stroke="${s}" stroke-width="1"/></svg>`,hai:`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="10" cy="10" r="4" stroke="${s}" stroke-width="2"/><path d="M4 24c0-3.3 2.7-6 6-6" stroke="${s}" stroke-width="2" stroke-linecap="round"/><rect x="18" y="6" width="10" height="10" rx="2" stroke="${s}" stroke-width="2"/><circle cx="21" cy="11" r="1" fill="${s}"/><circle cx="25" cy="11" r="1" fill="${s}"/><path d="M14 24h14M21 20v4" stroke="${s}" stroke-width="1.5" stroke-linecap="round"/></svg>`};return M[ic]||`<svg class="bi" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="10" stroke="${s}" stroke-width="2"/></svg>`}
+function renderBadges(f){badgeFilt=f;document.querySelectorAll('.btab').forEach(t=>t.classList.remove('on'));const el=document.getElementById('bt-'+f);if(el)el.classList.add('on');const grid=document.getElementById('bGrid');const ul=JSON.parse(localStorage.getItem('ms_badges')||'[]');const list=f==='all'?BADGES:BADGES.filter(b=>b.cat===f);grid.innerHTML='';list.forEach(b=>{const u=ul.includes(b.id);const d=document.createElement('div');d.className='badge'+(u?' u':'');const nm=lang==='en'?(b.ne||b.n):b.n;d.innerHTML=getBadgeIcon(b.ic,u)+`<div class="bn">${nm}</div>`;d.onclick=()=>{document.getElementById('bdgMT').textContent=nm;document.getElementById('bdgMI').innerHTML=getBadgeIcon(b.ic,u);document.getElementById('bdgMD').textContent=b.d;document.getElementById('bdgMS').innerHTML=u?`<span style="color:var(--c)">✓ ${TR[lang].unlocked}</span>`:`<span style="color:var(--tx2)">⬡ ${TR[lang].locked}</span>`;openX('bdgM')};grid.appendChild(d)})}
+function fBadge(f){renderBadges(f)}
+function loadQuote(){const pool=QI[lang]||QI.it;const q=pool[Math.floor(Math.random()*pool.length)];document.getElementById('qTxt').textContent='"'+q.t+'"';document.getElementById('qAuth').textContent='— '+q.a;fetch('https://api.quotable.io/random?tags=inspirational&maxLength=120').then(r=>r.json()).then(d=>{document.getElementById('qTxt').textContent='"'+d.content+'"';document.getElementById('qAuth').textContent='— '+d.author}).catch(()=>{})}
+function doWalk(){if(!W.on)startW();else if(!W.paused)pauseW();else resumeW()}
+function startW(){W={on:true,paused:false,t0:Date.now(),el:0,pt:0,dist:0,lp:null,wid:null};iShown={};tInt=setInterval(tickW,1000);startGPS();updWBtn()}
+function pauseW(){W.paused=true;W.pt=Date.now();clearInterval(tInt);if(W.wid){navigator.geolocation.clearWatch(W.wid);W.wid=null}updWBtn()}
+function resumeW(){W.paused=false;W.t0+=Date.now()-W.pt;tInt=setInterval(tickW,1000);navigator.geolocation.getCurrentPosition(p=>{W.lp={lat:p.coords.latitude,lng:p.coords.longitude};startGPS()},null,{timeout:3000});updWBtn()}
+function startGPS(){if(!navigator.geolocation)return;navigator.geolocation.getCurrentPosition(p=>{W.lp={lat:p.coords.latitude,lng:p.coords.longitude};W.wid=navigator.geolocation.watchPosition(gUp,null,{enableHighAccuracy:true,maximumAge:1500})},null,{enableHighAccuracy:true})}
+function gUp(p){if(W.paused||!W.lp)return;const n={lat:p.coords.latitude,lng:p.coords.longitude};const d=hav(W.lp,n);if(d>0.005&&d<0.3){W.dist+=d;document.getElementById('distV').textContent=W.dist.toFixed(2)}W.lp=n}
+function hav(a,b){const R=6371,dl=(b.lat-a.lat)*Math.PI/180,dn=(b.lng-a.lng)*Math.PI/180,x=Math.sin(dl/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dn/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
+function tickW(){W.el=Date.now()-W.t0;const t=Math.floor(W.el/1000),h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('tDisp').textContent=`${p(h)}:${p(m)}:${p(s)}`;const ci=540,mn=W.el/60000;document.getElementById('tProg').style.strokeDashoffset=ci-ci*Math.min(mn/60,1);if(W.dist>0&&W.el>0){const hr=W.el/3600000;document.getElementById('spdV').textContent=(W.dist/hr).toFixed(1)}const u=JSON.parse(localStorage.getItem('ms_user')||'{}');document.getElementById('kcalV').textContent=Math.round(W.dist*(parseFloat(u.weight||70))*0.9);checkI(mn)}
+function p(n){return String(n).padStart(2,'0')}
+function updWBtn(){const btn=document.getElementById('wBtn'),t=document.getElementById('wBtnT');btn.style.cssText='';if(!W.on){btn.className='btn bp';t.textContent=TR[lang].start}else if(W.paused){btn.className='btn bs';t.textContent=TR[lang].resume}else{btn.className='btn';btn.style.background='#f87171';btn.style.color='#fff';t.textContent=TR[lang].pause}}
+const INTR={it:[{m:5,msg:"C'è un pensiero che ti sta appesantendo? Nominalo e lascialo andare."},{m:15,msg:"Se questa sfida fosse un'opportunità travestita, cosa ti starebbe insegnando?"},{m:25,msg:"Smetti di cercare la perfezione. Qual è la versione 'buona quanto basta' del tuo progetto?"},{m:40,msg:"Complimenti per la profondità raggiunta. Qual è la singola azione che farai appena torni alla scrivania?"}],en:[{m:5,msg:"Is there a thought weighing you down? Name it and let it go."},{m:15,msg:"If this challenge were an opportunity in disguise, what would it be teaching you?"},{m:25,msg:"Stop searching for perfection. What's the 'good enough' version of your project?"},{m:40,msg:"Congratulations on the depth you've reached. What single action will you take when you get back to your desk?"}]};
+function checkI(mn){const pool=INTR[lang]||INTR.it;pool.forEach(t=>{if(mn>=t.m&&!iShown[t.m]){iShown[t.m]=true;document.getElementById('imsg').textContent=t.msg;document.getElementById('ibar').classList.add('on');if(navigator.vibrate)navigator.vibrate(50);setTimeout(closeI,30000)}})}
+function closeI(){document.getElementById('ibar').classList.remove('on')}
+function doRec(){recOn?stopRec():startRec()}
+function startRec(){if(!('webkitSpeechRecognition'in window)){alert(lang==='en'?'Use Chrome or Edge for voice recording.':'Usa Chrome o Edge per la registrazione vocale.');return}recO=new webkitSpeechRecognition();recO.continuous=true;recO.interimResults=true;recO.lang=lang==='en'?'en-US':'it-IT';recO.onstart=()=>{recOn=true;document.getElementById('rInd').classList.add('on');document.getElementById('recBtn').style.cssText='background:#f87171;color:#fff';document.getElementById('recT').textContent=TR[lang].stop};recO.onresult=e=>{let ii='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)tscript+=e.results[i][0].transcript+' ';else ii+=e.results[i][0].transcript}document.getElementById('bsTA').value=tscript+ii};recO.onerror=()=>stopRec();recO.onend=()=>{if(recOn)stopRec()};recO.start()}
+function stopRec(){recOn=false;if(recO){recO.stop();recO=null}document.getElementById('rInd').classList.remove('on');document.getElementById('recBtn').style.cssText='';document.getElementById('recT').textContent=TR[lang].record;saveBs()}
+function saveBs(){const k=tod();let d=gd(k);d.brainstorm=document.getElementById('bsTA').value;sd(k,d)}
+function expTxt(){const n=document.getElementById('bsTA').value;if(!n.trim()){alert(lang==='en'?'No notes.':'Nessuna nota.');return}const b=new Blob([n],{type:'text/plain'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`mindstep_${tod()}.txt`;a.click();URL.revokeObjectURL(u);closeX('exportM')}
+function sendAI(ai){const n=document.getElementById('bsTA').value;if(!n.trim()){alert(lang==='en'?'No notes.':'Nessuna nota.');return}const pr=encodeURIComponent(`${lang==='en'?'Date':'Data'}: ${new Date().toLocaleDateString()}\n\n${lang==='en'?'My thoughts during the walk':'I miei pensieri durante la camminata'}:\n"${n}"\n\n${lang==='en'?'Help me:\n1. Identify main themes\n2. Extract action items\n3. Prioritize\n4. Suggest next steps':'Aiutami a:\n1. Identificare i temi principali\n2. Estrarre action items\n3. Organizzare per priorità\n4. Suggerire prossimi passi'}`);const u={claude:`https://claude.ai/new?q=${pr}`,chatgpt:`https://chat.openai.com/?q=${pr}`,gemini:`https://gemini.google.com/?q=${pr}`,copilot:`https://copilot.microsoft.com/?q=${pr}`};window.open(u[ai],'_blank');closeX('exportM')}
+function opCus(){const u=document.getElementById('cusUrl').value.trim();if(!u){alert(lang==='en'?'Enter a URL.':'Inserisci un URL.');return}window.open(u,'_blank')}
+function goTab(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));document.getElementById('s-'+id).classList.add('on');document.getElementById('nt-'+id).classList.add('on');if(id==='achievements')renderBadges(badgeFilt);if(id==='stats')renderWeek();if(id==='calendar')renderCal()}
+function tog(bi,ci){const b=document.getElementById(bi),c=document.getElementById(ci);b.classList.toggle('o');c.classList.toggle('o')}
+let sR=[];
+function saveProfile(){const n=document.getElementById('uName').value.trim();if(!n){alert(lang==='en'?'Enter your name.':'Inserisci il nome.');return}localStorage.setItem('ms_user',JSON.stringify({name:n,age:document.getElementById('uAge').value,gender:document.getElementById('uGender').value,weight:document.getElementById('uWeight').value,lang,created:new Date().toISOString()}));document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById('s-routines').classList.add('on');updRC()}
+function addRSetup(){if(sR.length>=10)return;sR.push('');const i=sR.length-1,l=document.getElementById('rSetupList'),row=document.createElement('div');row.className='rsi';row.dataset.i=i;row.innerHTML=`<input type="text" placeholder="${lang==='en'?'E.g. Meditation...':'Es. Meditazione...'}" maxlength="40" oninput="sR[${i}]=this.value"><button class="delbtn" onclick="delRS(${i})">×</button>`;l.appendChild(row);updRC();if(sR.length>=10)document.getElementById('addRBtn').style.opacity='.4'}
+function delRS(i){document.querySelector(`.rsi[data-i="${i}"]`)?.remove();sR.splice(i,1);updRC();document.getElementById('addRBtn').style.opacity='1'}
+function updRC(){document.getElementById('rCount').textContent=sR.length+'/10'}
+function saveRSetup(){routines=Array.from(document.querySelectorAll('#rSetupList input[type=text]')).map(i=>i.value.trim()).filter(v=>v);if(!routines.length&&!confirm(lang==='en'?'No routines. Continue?':'Nessuna routine. Continuare?'))return;localStorage.setItem('ms_routines',JSON.stringify(routines));loadApp()}
+function renderR(){const list=document.getElementById('rList');list.innerHTML='';if(!routines.length){list.innerHTML=`<p style="text-align:center;padding:14px;font-size:13px;color:var(--tx2)">${lang==='en'?'Go to More → Edit Routines':'Vai in Altro → Modifica Routine'}</p>`;updProg(0,0);return}const k=tod(),d=gd(k);routines.forEach((r,i)=>{const done=!!(d.routines&&d.routines[i]);const el=document.createElement('div');el.className='ri'+(done?' done':'');el.innerHTML=`<input type="checkbox" id="ri${i}" ${done?'checked':''} onchange="chkR(${i})"><label class="ri-l" for="ri${i}">${r}</label>`;list.appendChild(el)});const done=d.routines?routines.filter((_,i)=>d.routines[i]).length:0;updProg(done,routines.length)}
+function chkR(i){const k=tod();let d=gd(k);d.routines=d.routines||{};d.routines[i]=document.getElementById('ri'+i).checked;sd(k,d);document.getElementById('ri'+i).parentElement.classList.toggle('done',d.routines[i]);const done=routines.filter((_,j)=>d.routines&&d.routines[j]).length;updProg(done,routines.length)}
+function updProg(done,total){const pct=total>0?Math.round(done/total*100):0;document.getElementById('rSum').textContent=`${done}/${total}`;document.getElementById('pBar').style.width=pct+'%';document.getElementById('pPct').textContent=pct+'%'}
+function renderWeek(){const g=document.getElementById('wGrid');g.innerHTML='';const dn=lang==='en'?['Su','Mo','Tu','We','Th','Fr','Sa']:['D','L','M','M','G','V','S'];const s=new Date();s.setDate(s.getDate()-s.getDay());let a=0,km=0,tR=0,dR=0;for(let i=0;i<7;i++){const d=new Date(s);d.setDate(s.getDate()+i);const k=d.toISOString().split('T')[0],dt=gd(k);const h=(dt.routines&&Object.values(dt.routines).some(v=>v))||dt.walk;if(h)a++;if(dt.walk)km+=dt.walk.dist||0;routines.forEach((_,idx)=>{if(dt.routines&&dt.routines.hasOwnProperty(idx)){tR++;if(dt.routines[idx])dR++}});const c=document.createElement('div');c.className='day'+(h?' on':'');c.innerHTML=`<div class="dn">${dn[i]}</div><div>${h?'✓':'—'}</div>`;c.onclick=()=>alert(`${d.toLocaleDateString()}\n${dt.walk?(dt.walk.dist||0).toFixed(1)+' km':lang==='en'?'No walk':'Nessuna camminata'}`);g.appendChild(c)}document.getElementById('wDays').textContent=`${a}/7`;document.getElementById('wKm').textContent=km.toFixed(1);document.getElementById('wRout').textContent=(tR>0?Math.round(dR/tR*100):0)+'%'}
+function renderCal(){const card=document.getElementById('calCard');const keys=Object.keys(localStorage).filter(k=>k.startsWith('ms_day_'));if(!keys.length){card.innerHTML=`<div class="empty"><svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><h3>${lang==='en'?'No data':'Nessun dato'}</h3><p>${lang==='en'?'Start walking.':'Inizia a camminare.'}</p></div>`;return}card.innerHTML=keys.sort().reverse().map(k=>{const d=JSON.parse(localStorage.getItem(k));const dt=k.replace('ms_day_','');const dn=d.routines?Object.values(d.routines).filter(v=>v).length:0;const ds=d.walk?(d.walk.dist||0).toFixed(1):'0';return`<div style="padding:12px;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;font-weight:600">${dt}</span><div style="display:flex;gap:14px;font-size:12px;color:var(--tx2)"><span style="color:var(--c)">${ds} km</span><span>${dn} routine</span></div></div>`}).join('')}
+function openX(id){document.getElementById(id).classList.add('on')}
+function closeX(id){document.getElementById(id).classList.remove('on')}
+window.addEventListener('click',e=>{document.querySelectorAll('.modal.on').forEach(m=>{if(e.target===m)m.classList.remove('on')})});
+function setTh(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('ms_theme',t);['light','auto','dark'].forEach(x=>document.getElementById('th-'+x).classList.remove('on'));document.getElementById('th-'+t).classList.add('on')}
+function doEditPro(){const u=JSON.parse(localStorage.getItem('ms_user')||'{}');document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById('s-welcome').classList.add('on');document.getElementById('uName').value=u.name||'';document.getElementById('uAge').value=u.age||'';document.getElementById('uGender').value=u.gender||'';document.getElementById('uWeight').value=u.weight||''}
+function openEditR(){const list=document.getElementById('eRList');list.innerHTML='';routines.forEach(r=>{const row=document.createElement('div');row.className='rsi';row.innerHTML=`<input type="text" value="${r}" maxlength="40"><button class="delbtn" onclick="this.parentElement.remove()">×</button>`;list.appendChild(row)});openX('editRM')}
+function addER(){const l=document.getElementById('eRList');if(l.children.length>=10)return;const row=document.createElement('div');row.className='rsi';row.innerHTML=`<input type="text" placeholder="${lang==='en'?'New routine...':'Nuova routine...'}" maxlength="40"><button class="delbtn" onclick="this.parentElement.remove()">×</button>`;l.appendChild(row)}
+function saveER(){routines=Array.from(document.querySelectorAll('#eRList input[type=text]')).map(i=>i.value.trim()).filter(v=>v);localStorage.setItem('ms_routines',JSON.stringify(routines));closeX('editRM');renderR()}
+function expAll(){const d={v:VER,date:new Date().toISOString(),user:JSON.parse(localStorage.getItem('ms_user')||'{}'),routines,days:{}};Object.keys(localStorage).filter(k=>k.startsWith('ms_day_')).forEach(k=>{d.days[k.replace('ms_day_','')]=JSON.parse(localStorage.getItem(k))});const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=`mindstep_export_${tod()}.json`;a.click();URL.revokeObjectURL(u)}
+function resetAll(){if(confirm(lang==='en'?'Delete ALL data?':'Cancellare TUTTI i dati?')&&confirm(lang==='en'?'Confirm.':'Conferma.')){localStorage.clear();location.reload()}}
+function calcStreak(){let s=0;const d=new Date();d.setHours(0,0,0,0);for(let i=0;i<365;i++){const k=new Date(d.getTime()-i*86400000).toISOString().split('T')[0];const dt=gd(k);if((dt.routines&&Object.values(dt.routines).some(v=>v))||dt.walk)s++;else break}return s}
+function loadWeather(){if(!navigator.geolocation)return;navigator.geolocation.getCurrentPosition(pos=>{fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&appid=APIKEY&units=metric`).then(r=>r.json()).then(d=>{const ic={'Clear':'☀','Clouds':'☁','Rain':'🌧','Snow':'❄','Drizzle':'🌦'};document.getElementById('wIco').textContent=ic[d.weather?.[0]?.main]||'⛅';document.getElementById('wTmp').textContent=Math.round(d.main.temp)+'°'}).catch(()=>{})},()=>{},{timeout:5000})}
+function tod(){return new Date().toISOString().split('T')[0]}
+function gd(k){return JSON.parse(localStorage.getItem('ms_day_'+k)||'{}')}
+function sd(k,d){localStorage.setItem('ms_day_'+k,JSON.stringify(d))}
+function loadApp(){const u=JSON.parse(localStorage.getItem('ms_user')||'null');routines=JSON.parse(localStorage.getItem('ms_routines')||'[]');if(!u){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById('s-welcome').classList.add('on');return}document.getElementById('brandN').textContent=u.name;document.getElementById('strVal').textContent=calcStreak();renderR();loadQuote();goTab('home')}
+function init(){lang=localStorage.getItem('ms_lang')||'it';setLang(lang);const t=localStorage.getItem('ms_theme')||'auto';setTh(t);loadApp();loadWeather();if('serviceWorker'in navigator)navigator.serviceWorker.register('./service-worker.js').catch(()=>{});console.log('MindStep v'+VER)}
+init();
+</script>
+</body>
+</html>
